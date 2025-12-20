@@ -2,9 +2,10 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
 import useAuth from "../../../hooks/useAuth";
+import axios from "axios";
 
 const Register = () => {
-  const { registerUser, signInGoogle } = useAuth();
+  const { registerUser, signInGoogle, updateUser } = useAuth();
 
   const {
     register,
@@ -13,9 +14,33 @@ const Register = () => {
   } = useForm();
 
   const handleRegistration = (data) => {
+    const profileImage = data.photo[0];
+
     registerUser(data.email, data.password)
       .then((result) => {
         console.log(result.user);
+        // Store the image and get the photo url
+        const formData = new FormData();
+        formData.append("image", profileImage);
+        const imageApiUrl = `https://api.imgbb.com/1/upload?key=${
+          import.meta.env.VITE_image_host_key
+        }`;
+        axios.post(imageApiUrl, formData).then((res) => {
+          console.log("after iamge upload", res.data);
+          const userProfile = {
+            displayName: data.name,
+            photoURL: res.data.data.url,
+          };
+
+          updateUser(userProfile)
+            .then((result) => {
+              console.log(result);
+            })
+            .catch((error) => {
+              console.log(error);
+            });
+        });
+        // Updating User Profile
       })
       .catch((error) => {
         console.log(error);
@@ -50,7 +75,15 @@ const Register = () => {
             <p className="text-red-500">Full Name is required!</p>
           )}
           <label className="label text-primary-content">Photo</label>
-          <input type="file" className="file-input" />
+          <input
+            type="file"
+            {...register("photo", { required: true })}
+            className="file-input"
+            placeholder="Your Image"
+          />
+          {errors.photo?.type === "required" && (
+            <p className="text-red-500">Profile Photo is required!</p>
+          )}
           <label className="label text-primary-content">Email</label>
           <input
             type="email"
