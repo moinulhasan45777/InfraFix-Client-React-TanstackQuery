@@ -1,8 +1,11 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
+import useAuth from "../../../hooks/useAuth";
 
 const Register = () => {
+  const { registerUser, signInGoogle } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -10,7 +13,23 @@ const Register = () => {
   } = useForm();
 
   const handleRegistration = (data) => {
-    console.log(data);
+    registerUser(data.email, data.password)
+      .then((result) => {
+        console.log(result.user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const handleSignInGoogle = () => {
+    signInGoogle()
+      .then((result) => {
+        console.log(result);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
   };
 
   return (
@@ -61,7 +80,10 @@ const Register = () => {
             <p className="font-bold">OR</p>
             <div className="h-px w-full bg-primary"></div>
           </div>
-          <button className="btn bg-base-200 text-black border-[#e5e5e5]">
+          <button
+            onClick={handleSignInGoogle}
+            className="btn bg-base-200 text-black border-[#e5e5e5]"
+          >
             <svg
               aria-label="Google logo"
               width="16"
