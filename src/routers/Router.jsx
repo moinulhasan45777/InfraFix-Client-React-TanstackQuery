@@ -11,6 +11,7 @@ import AuthLayout from "../layouts/AuthLayout.jsx";
 import DashboardLayout from "../layouts/DashboardLayout.jsx";
 import PrivateRoute from "./PrivateRoute.jsx";
 import MyIssues from "../pages/dashboard/citizen/MyIssues.jsx";
+import IssueDetails from "../pages/issue-details/IssueDetails.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -28,6 +29,14 @@ const Router = createBrowserRouter([
       {
         path: "/about-us",
         Component: AboutUs,
+      },
+      {
+        path: "/issue-details",
+        element: (
+          <PrivateRoute>
+            <IssueDetails></IssueDetails>
+          </PrivateRoute>
+        ),
       },
     ],
   },

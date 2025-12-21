@@ -1,6 +1,13 @@
-import React from "react";
+import { useQuery } from "@tanstack/react-query";
+import React, { useState } from "react";
+import useAuth from "../../../hooks/useAuth";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import { Link, useNavigate } from "react-router";
 
 const MyIssues = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const axiosSecure = useAxiosSecure();
   const categories = [
     "Roads & Transportation",
     "Water & Sanitation",
@@ -15,8 +22,25 @@ const MyIssues = () => {
     "Health Hazards",
     "Other",
   ];
-
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const statuses = ["Pending", "In Progress", "Resolved", "Closed"];
+
+  const { data: issues = [] } = useQuery({
+    queryKey: ["myIssues", user?.email],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/my-issues?email=${user.email}`);
+      return res.data;
+    },
+  });
+
+  const filteredIssues = issues.filter((issue) => {
+    return (
+      (selectedStatus ? issue.status === selectedStatus : true) &&
+      (selectedCategory ? issue.category === selectedCategory : true)
+    );
+  });
+
   return (
     <div className="p-4 md:p-6 max-w-7xl">
       {/* Page Header */}
@@ -33,7 +57,11 @@ const MyIssues = () => {
           {/* Status Filter */}
           <div>
             <label className="block text-sm text-gray-600 mb-1">Status</label>
-            <select className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring">
+            <select
+              defaultValue=""
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring"
+            >
               <option value="">All Status</option>
               {statuses.map((status) => (
                 <option key={status}>{status}</option>
@@ -44,7 +72,11 @@ const MyIssues = () => {
           {/* Category Filter */}
           <div>
             <label className="block text-sm text-gray-600 mb-1">Category</label>
-            <select className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring">
+            <select
+              defaultValue=""
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring"
+            >
               <option value="">All Categories</option>
               {categories.map((cat) => (
                 <option key={cat}>{cat}</option>
@@ -65,34 +97,62 @@ const MyIssues = () => {
               <th className="text-center px-4 py-3">Actions</th>
             </tr>
           </thead>
-
           <tbody className="text-sm text-gray-700">
             {/* Row */}
-            <tr className="border-t hover:bg-gray-50 transition">
-              <td className="px-4 py-3 font-medium">Broken Street Light</td>
-              <td className="px-4 py-3">21 Jan 2025</td>
-              <td className="px-4 py-3">
-                <span className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
-                  Pending
-                </span>
-              </td>
-              <td className="px-4 py-3">
-                <div className="flex items-center justify-center gap-2 flex-wrap">
-                  <button className="px-3 py-1 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200">
-                    View
-                  </button>
-                  <button className="px-3 py-1 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200">
-                    Edit
-                  </button>
-                  <button className="px-3 py-1 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200">
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
+            {filteredIssues.map((issue) => {
+              return (
+                <tr className="border-t hover:bg-gray-50 transition">
+                  <td className="px-4 py-3 font-medium">{issue.title}</td>
+                  <td className="px-4 py-3">
+                    {new Date(issue.createdAt).toLocaleDateString("en-GB", {
+                      day: "2-digit",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
+                      {issue.status}
+                    </span>
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="flex items-center justify-center gap-2 flex-wrap">
+                      <button
+                        onClick={() =>
+                          navigate("/issue-details", { state: { issue } })
+                        }
+                        className="px-3 py-1 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200"
+                      >
+                        View
+                      </button>
+                      <button className="px-3 py-1 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200">
+                        Edit
+                      </button>
+                      <button className="px-3 py-1 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200">
+                        Delete
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
+      <dialog id="my_modal_1" className="modal">
+        <div className="modal-box">
+          <h3 className="font-bold text-lg">Hello!</h3>
+          <p className="py-4">
+            Press ESC key or click the button below to close
+          </p>
+          <div className="modal-action">
+            <form method="dialog">
+              {/* if there is a button in form, it will close the modal */}
+              <button className="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </div>
   );
 };
