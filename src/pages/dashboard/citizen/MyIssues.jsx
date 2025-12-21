@@ -2,13 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
 
 const MyIssues = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();
+
   const categories = [
     "Roads & Transportation",
     "Water & Sanitation",
@@ -23,9 +24,12 @@ const MyIssues = () => {
     "Health Hazards",
     "Other",
   ];
+
+  const statuses = ["Pending", "In Progress", "Resolved", "Closed"];
+
   const [selectedStatus, setSelectedStatus] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
-  const statuses = ["Pending", "In Progress", "Resolved", "Closed"];
+  const [modalIssue, setModalIssue] = useState(null);
 
   const { data: issues = [], refetch } = useQuery({
     queryKey: ["myIssues", user?.email],
@@ -58,21 +62,47 @@ const MyIssues = () => {
           .then(() => {
             Swal.fire({
               title: "Deleted!",
-              text: "Your file has been deleted.",
+              text: "Your issue has been deleted.",
               icon: "success",
             });
             refetch();
           })
-          .catch((err) => {
+          .catch(() => {
             Swal.fire({
               icon: "error",
               title: "Oops...",
-              text: { err },
-              footer: '<a href="#">Why do I have this issue?</a>',
+              text: "Something went wrong",
             });
           });
       }
     });
+  };
+
+  const handleUpdate = async (e) => {
+    const updatedIssue = {
+      title: e.target.title.value,
+      description: e.target.description.value,
+      category: e.target.category.value,
+      location: e.target.location.value,
+    };
+
+    await axiosSecure
+      .patch(`/update-issue/${modalIssue._id}`, updatedIssue)
+      .then(() => {
+        Swal.fire({
+          title: "Updated!",
+          text: "Your issue has been updated.",
+          icon: "success",
+        });
+        refetch();
+      })
+      .catch((err) => {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: err,
+        });
+      });
   };
 
   return (
@@ -98,7 +128,9 @@ const MyIssues = () => {
             >
               <option value="">All Status</option>
               {statuses.map((status) => (
-                <option key={status}>{status}</option>
+                <option key={status} value={status}>
+                  {status}
+                </option>
               ))}
             </select>
           </div>
@@ -113,7 +145,9 @@ const MyIssues = () => {
             >
               <option value="">All Categories</option>
               {categories.map((cat) => (
-                <option key={cat}>{cat}</option>
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
@@ -132,63 +166,171 @@ const MyIssues = () => {
             </tr>
           </thead>
           <tbody className="text-sm text-gray-700">
-            {/* Row */}
-            {filteredIssues.map((issue) => {
-              return (
-                <tr className="border-t hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 font-medium">{issue.title}</td>
-                  <td className="px-4 py-3">
-                    {new Date(issue.createdAt).toLocaleDateString("en-GB", {
-                      day: "2-digit",
-                      month: "short",
-                      year: "numeric",
-                    })}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
-                      {issue.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-center gap-2 flex-wrap">
-                      <button
-                        onClick={() =>
-                          navigate("/issue-details", { state: { issue } })
-                        }
-                        className="px-3 py-1 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200"
-                      >
-                        View
-                      </button>
-                      <button className="px-3 py-1 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200">
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(issue)}
-                        className="px-3 py-1 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
+            {filteredIssues.map((issue) => (
+              <tr
+                key={issue._id}
+                className="border-t hover:bg-gray-50 transition"
+              >
+                <td className="px-4 py-3 font-medium">{issue.title}</td>
+                <td className="px-4 py-3">
+                  {new Date(issue.createdAt).toLocaleDateString("en-GB", {
+                    day: "2-digit",
+                    month: "short",
+                    year: "numeric",
+                  })}
+                </td>
+                <td className="px-4 py-3">
+                  <span className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-700">
+                    {issue.status}
+                  </span>
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center justify-center gap-2 flex-wrap">
+                    <button
+                      onClick={() =>
+                        navigate("/issue-details", { state: { issue } })
+                      }
+                      className="px-3 py-1 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200"
+                    >
+                      View
+                    </button>
+                    <button
+                      onClick={() => {
+                        setModalIssue(issue);
+                        document.getElementById("my_modal_1").showModal();
+                      }}
+                      className="px-3 py-1 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(issue)}
+                      className="px-3 py-1 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
+
+      {/* ------------------------------------------------------- Modal ----------------------------------------------------------*/}
       <dialog id="my_modal_1" className="modal">
-        <div className="modal-box">
-          <h3 className="font-bold text-lg">Hello!</h3>
-          <p className="py-4">
-            Press ESC key or click the button below to close
-          </p>
-          <div className="modal-action">
-            <form method="dialog">
-              {/* if there is a button in form, it will close the modal */}
-              <button className="btn">Close</button>
-            </form>
+        <form
+          onSubmit={handleUpdate}
+          method="dialog"
+          className="modal-box w-full max-w-lg"
+        >
+          <h3 className="font-bold text-xl text-gray-800 mb-4">Update Issue</h3>
+
+          {/* Title */}
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 font-medium mb-1"
+              htmlFor="title"
+            >
+              Title
+            </label>
+            <input
+              type="text"
+              id="title"
+              name="title"
+              placeholder="Enter issue title"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+              value={modalIssue?.title || ""}
+              onChange={(e) =>
+                setModalIssue({ ...modalIssue, title: e.target.value })
+              }
+            />
           </div>
-        </div>
+
+          {/* Description */}
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 font-medium mb-1"
+              htmlFor="description"
+            >
+              Description
+            </label>
+            <textarea
+              id="description"
+              name="description"
+              placeholder="Enter detailed description"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 h-24 focus:outline-none focus:ring focus:ring-blue-200"
+              value={modalIssue?.description || ""}
+              onChange={(e) =>
+                setModalIssue({ ...modalIssue, description: e.target.value })
+              }
+            ></textarea>
+          </div>
+
+          {/* Category */}
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 font-medium mb-1"
+              htmlFor="category"
+            >
+              Category
+            </label>
+            <select
+              id="category"
+              name="category"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+              value={modalIssue?.category || ""}
+              onChange={(e) =>
+                setModalIssue({ ...modalIssue, category: e.target.value })
+              }
+            >
+              <option value="">Select Category</option>
+              {categories.map((cat) => (
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Location */}
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 font-medium mb-1"
+              htmlFor="location"
+            >
+              Location
+            </label>
+            <input
+              type="text"
+              id="location"
+              name="location"
+              placeholder="Enter issue location"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+              value={modalIssue?.location || ""}
+              onChange={(e) =>
+                setModalIssue({ ...modalIssue, location: e.target.value })
+              }
+            />
+          </div>
+
+          {/* Modal actions */}
+          <div className="modal-action justify-between">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => document.getElementById("my_modal_1").close()}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-primary"
+              // handle form submission here
+            >
+              Update Issue
+            </button>
+          </div>
+        </form>
       </dialog>
     </div>
   );

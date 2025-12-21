@@ -4,8 +4,10 @@ import { useForm } from "react-hook-form";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
 
 const ReportIssue = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const issueCategories = [
     "Roads & Transportation",
@@ -58,6 +60,8 @@ const ReportIssue = () => {
             showConfirmButton: false,
             timer: 1500,
           });
+
+          navigate("/dashboard/citizen/my-issues");
         })
         .catch((error) => {
           Swal.fire({
