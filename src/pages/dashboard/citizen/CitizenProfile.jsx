@@ -6,7 +6,7 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 
 const CitizenProfile = () => {
-  const { user } = useAuth();
+  const { user, updateUser, setLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
 
   const { data: citizen = [], refetch } = useQuery({
@@ -40,6 +40,38 @@ const CitizenProfile = () => {
           }
         });
     });
+  };
+
+  const handleUpdate = (e) => {
+    const newProfile = {
+      displayName: e.target.name.value,
+      photoURL: e.target.photoUrl.value,
+    };
+
+    updateUser(newProfile)
+      .then(async () => {
+        const newUser = {
+          name: newProfile.displayName,
+          photo: newProfile.photoURL,
+        };
+
+        await axiosSecure
+          .patch(`/update-user/${user?.email}`, newUser)
+          .then(() => {
+            Swal.fire({
+              title: "Updated!",
+              text: "Update Completed",
+              icon: "success",
+            });
+            setLoading(false);
+          })
+          .catch(() => {
+            setLoading(false);
+          });
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -79,7 +111,7 @@ const CitizenProfile = () => {
       </div>
 
       {/* Profile Form */}
-      <form className="space-y-4">
+      <form onSubmit={handleUpdate} className="space-y-4">
         {/* Full Name */}
         <div>
           <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -87,6 +119,7 @@ const CitizenProfile = () => {
           </label>
           <input
             type="text"
+            name="name"
             defaultValue={user?.displayName}
             className="input input-bordered w-full"
             placeholder="Enter your full name"
@@ -100,6 +133,7 @@ const CitizenProfile = () => {
           </label>
           <input
             type="text"
+            name="photoUrl"
             defaultValue={user?.photoURL}
             className="input input-bordered w-full"
             placeholder="Paste your profile photo URL"
