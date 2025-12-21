@@ -2,12 +2,14 @@ import React from "react";
 import { useLocation, useNavigate } from "react-router";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import useAuth from "../../hooks/useAuth";
 
 const IssueDetails = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const axiosSecure = useAxiosSecure();
   const { issue } = location.state || {};
+  const { user } = useAuth();
 
   const formatDate = (dateStr) => {
     return new Date(dateStr).toLocaleDateString("en-GB", {
@@ -60,6 +62,42 @@ const IssueDetails = () => {
               footer: '<a href="#">Why do I have this issue?</a>',
             });
           });
+      }
+    });
+  };
+
+  const handleBoost = () => {
+    const priority = {
+      priority: "High",
+    };
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You will be charged BDT 100",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Proceed with Payment!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        const newPayment = {
+          paymentType: "Issue Boost",
+          paymentBy: user.email,
+          paymentAmount: 100,
+        };
+        await axiosSecure.post("/payment", newPayment).then(async () => {
+          await axiosSecure
+            .patch(`/update-priority/${issue._id}`, priority)
+            .then(() => {
+              Swal.fire({
+                title: "Payment Successful!",
+                text: "Issue has been boosted!",
+                icon: "success",
+              });
+
+              navigate("/dashboard/citizen/my-issues");
+            });
+        });
       }
     });
   };
@@ -126,7 +164,10 @@ const IssueDetails = () => {
               {issue.priority || "Low"}
             </span>
           </div>
-          <button className="px-3 py-1 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700 transition mt-5 sm:mt-0">
+          <button
+            onClick={handleBoost}
+            className="px-3 py-1 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700 transition mt-5 sm:mt-0"
+          >
             Boost Issue
           </button>
         </div>
