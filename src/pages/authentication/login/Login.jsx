@@ -1,18 +1,65 @@
 import React from "react";
-import { Link } from "react-router";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router";
+import useAuth from "../../../hooks/useAuth";
+import Swal from "sweetalert2";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const { signInUser } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+
+  const handleLogin = (data) => {
+    signInUser(data.email, data.password)
+      .then(() => {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Successfully Logged In!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        navigate("/");
+      })
+      .catch(() => {
+        Swal.fire({
+          icon: "error",
+          title: "Error 500: Internal Server Error",
+          text: "Could not Log in!",
+        });
+      });
+  };
   return (
     <div>
       <h1 className="text-4xl font-black text-center mb-8 text-primary-content">
         Login
       </h1>
-      <form className="w-80 ">
+      <form onSubmit={handleSubmit(handleLogin)} className="w-80 ">
         <fieldset className="fieldset">
           <label className="label text-primary-content">Email</label>
-          <input type="email" className="input " placeholder="Email" />
+          <input
+            type="email"
+            {...register("email", { required: true })}
+            className="input "
+            placeholder="Email"
+          />
+          {errors.email?.type === "required" && (
+            <p className="text-red-500">Email is required!</p>
+          )}
           <label className="label text-primary-content">Password</label>
-          <input type="password" className="input" placeholder="Password" />
+          <input
+            type="password"
+            {...register("password", { required: true })}
+            className="input"
+            placeholder="Password"
+          />
+          {errors.password?.type === "required" && (
+            <p className="text-red-500">Password is required!</p>
+          )}
           <div>
             <Link
               to="/auth/forgot-password"

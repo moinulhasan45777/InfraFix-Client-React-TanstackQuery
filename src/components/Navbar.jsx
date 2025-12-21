@@ -82,7 +82,7 @@ const Navbar = () => {
               <img
                 src={user.photoURL}
                 alt="Profile Picture"
-                className="w-12 h-12 rounded-full border-2 border-secondary cursor-pointer"
+                className="w-12 h-12 rounded-full border-2 border-secondary cursor-pointer object-cover"
                 referrerPolicy="no-referrer"
               />
             </div>
