@@ -2,12 +2,11 @@ import React from "react";
 import { Link, NavLink } from "react-router";
 import logo from "../assets/Logo.png";
 import useAuth from "../hooks/useAuth";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
-  const { user } = useAuth();
-  if (user) {
-    console.log(user.photoURL);
-  }
+  const { user, logOut } = useAuth();
+
   const links = (
     <>
       <li>
@@ -26,6 +25,18 @@ const Navbar = () => {
       </li>
     </>
   );
+
+  const handleLogOut = () => {
+    logOut().then(() => {
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Successfully Logged Out!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    });
+  };
 
   return (
     <div className="mb-5 navbar bg-primary text-black shadow-sm rounded-xl px-5">
@@ -86,7 +97,7 @@ const Navbar = () => {
                 <NavLink to="/dashboard">Dashboard</NavLink>
               </li>
               <li>
-                <button>Logout</button>
+                <button onClick={handleLogOut}>Logout</button>
               </li>
             </ul>
           </div>
