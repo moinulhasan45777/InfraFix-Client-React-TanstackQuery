@@ -5,8 +5,10 @@ import { MdMenuBook } from "react-icons/md";
 import { MdReportProblem } from "react-icons/md";
 import useAuth from "../hooks/useAuth";
 import { Link, Outlet } from "react-router";
+import useRole from "../hooks/useRole";
 const DashboardLayout = () => {
   const { user } = useAuth();
+  const { role } = useRole();
   return (
     <div className="drawer lg:drawer-open ">
       <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -50,55 +52,58 @@ const DashboardLayout = () => {
         ></label>
         <div className="flex min-h-full flex-col items-start bg-primary is-drawer-close:w-14 is-drawer-open:w-64">
           {/* Sidebar content here */}
-          <ul className="menu w-full grow">
-            {/* List item */}
-            <li>
-              <button
-                className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                data-tip="Dashboard"
-              >
-                {/* Dashboard icon */}
-                <RiDashboardLine className="text-xl" />
-                <span className="is-drawer-close:hidden">Dashboard</span>
-              </button>
-            </li>
+          {role.role == "citizen" && (
+            <ul className="menu w-full grow">
+              {/* List item */}
+              <li>
+                <Link
+                  to="/dashboard/citizen"
+                  className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                  data-tip="Dashboard"
+                >
+                  {/* Dashboard icon */}
+                  <RiDashboardLine className="text-xl" />
+                  <span className="is-drawer-close:hidden">Dashboard</span>
+                </Link>
+              </li>
 
-            {/* List item */}
-            <li>
-              <Link
-                to="/dashboard/citizen/profile"
-                className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                data-tip="Profile"
-              >
-                {/* Profile icon */}
-                <CgProfile className="text-xl" />
-                <span className="is-drawer-close:hidden">Profile</span>
-              </Link>
-            </li>
-            {/* List item */}
-            <li>
-              <Link
-                to="/dashboard/citizen/my-issues"
-                className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                data-tip="My Issues"
-              >
-                {/* My Issues icon */}
-                <MdMenuBook className="text-xl" />
-                <span className="is-drawer-close:hidden">My Issues</span>
-              </Link>
-            </li>
-            <li>
-              <Link
-                to="/dashboard/citizen/report-issue"
-                className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                data-tip="Report Issue"
-              >
-                {/* My Issues icon */}
-                <MdReportProblem className="text-xl" />
-                <span className="is-drawer-close:hidden">Report Issue</span>
-              </Link>
-            </li>
-          </ul>
+              {/* List item */}
+              <li>
+                <Link
+                  to="/dashboard/citizen/profile"
+                  className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                  data-tip="Profile"
+                >
+                  {/* Profile icon */}
+                  <CgProfile className="text-xl" />
+                  <span className="is-drawer-close:hidden">Profile</span>
+                </Link>
+              </li>
+              {/* List item */}
+              <li>
+                <Link
+                  to="/dashboard/citizen/my-issues"
+                  className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                  data-tip="My Issues"
+                >
+                  {/* My Issues icon */}
+                  <MdMenuBook className="text-xl" />
+                  <span className="is-drawer-close:hidden">My Issues</span>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/dashboard/citizen/report-issue"
+                  className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                  data-tip="Report Issue"
+                >
+                  {/* My Issues icon */}
+                  <MdReportProblem className="text-xl" />
+                  <span className="is-drawer-close:hidden">Report Issue</span>
+                </Link>
+              </li>
+            </ul>
+          )}
         </div>
       </div>
     </div>

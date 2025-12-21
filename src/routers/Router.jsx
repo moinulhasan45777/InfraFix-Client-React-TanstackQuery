@@ -13,6 +13,7 @@ import PrivateRoute from "./PrivateRoute.jsx";
 import MyIssues from "../pages/dashboard/citizen/MyIssues.jsx";
 import IssueDetails from "../pages/issue-details/IssueDetails.jsx";
 import CitizenProfile from "../pages/dashboard/citizen/CitizenProfile.jsx";
+import CitizenDashboard from "../pages/dashboard/citizen/CitizenDashboard.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -59,6 +60,14 @@ const Router = createBrowserRouter([
     path: "/dashboard",
     element: <DashboardLayout></DashboardLayout>,
     children: [
+      {
+        path: "/dashboard/citizen",
+        element: (
+          <PrivateRoute>
+            <CitizenDashboard></CitizenDashboard>
+          </PrivateRoute>
+        ),
+      },
       {
         path: "/dashboard/citizen/report-issue",
         element: (
