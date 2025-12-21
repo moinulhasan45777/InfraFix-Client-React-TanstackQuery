@@ -194,21 +194,25 @@ const MyIssues = () => {
                     >
                       View
                     </button>
-                    <button
-                      onClick={() => {
-                        setModalIssue(issue);
-                        document.getElementById("my_modal_1").showModal();
-                      }}
-                      className="px-3 py-1 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDelete(issue)}
-                      className="px-3 py-1 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200"
-                    >
-                      Delete
-                    </button>
+                    {issue.status == "Pending" && (
+                      <>
+                        <button
+                          onClick={() => {
+                            setModalIssue(issue);
+                            document.getElementById("my_modal_1").showModal();
+                          }}
+                          className="px-3 py-1 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={() => handleDelete(issue)}
+                          className="px-3 py-1 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200"
+                        >
+                          Delete
+                        </button>
+                      </>
+                    )}
                   </div>
                 </td>
               </tr>

@@ -5,6 +5,7 @@ import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 
 const ReportIssue = () => {
   const navigate = useNavigate();
@@ -33,6 +34,15 @@ const ReportIssue = () => {
   const axiosSecure = useAxiosSecure();
 
   const handleAddIssue = (data) => {
+    if (citizen[0].status == "free" && citizen[0].issue_count >= 3) {
+      Swal.fire({
+        icon: "error",
+        title:
+          "Maximum Limit Reached in Free Mode! Please Subscribe to get more Reports!",
+      });
+      return;
+    }
+
     const image = data.image[0];
     const formData = new FormData();
     formData.append("image", image);
@@ -53,15 +63,22 @@ const ReportIssue = () => {
       axiosSecure
         .post("/issue", newIssue)
         .then(() => {
-          Swal.fire({
-            position: "center",
-            icon: "success",
-            title: "Issue submitted Successfully!",
-            showConfirmButton: false,
-            timer: 1500,
-          });
-
-          navigate("/dashboard/citizen/my-issues");
+          const updatedCount = {
+            issue_count: citizen[0].issue_count + 1,
+          };
+          axiosSecure
+            .patch(`/citizen/issue_count/${citizen[0]._id}`, updatedCount)
+            .then(() => {
+              Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Issue submitted Successfully!",
+                showConfirmButton: false,
+                timer: 1500,
+              });
+              refetch;
+              navigate("/dashboard/citizen/my-issues");
+            });
         })
         .catch((error) => {
           Swal.fire({
@@ -71,6 +88,14 @@ const ReportIssue = () => {
         });
     });
   };
+
+  const { data: citizen = [], refetch } = useQuery({
+    queryKey: ["citizen", user?.email],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/citizen?email=${user.email}`);
+      return res.data;
+    },
+  });
 
   return (
     <div className="max-w-3xl ml-10 p-6 mt-10 shadow-2xl rounded-lg bg-white">
