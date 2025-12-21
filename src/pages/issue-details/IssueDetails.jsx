@@ -1,8 +1,12 @@
 import React from "react";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
+import useAxiosSecure from "../../hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 
 const IssueDetails = () => {
+  const navigate = useNavigate();
   const location = useLocation();
+  const axiosSecure = useAxiosSecure();
   const { issue } = location.state || {};
 
   const formatDate = (dateStr) => {
@@ -24,6 +28,40 @@ const IssueDetails = () => {
   const priorityColors = {
     Low: "bg-green-100 text-green-700",
     High: "bg-red-100 text-red-700",
+  };
+
+  //   --------------------------------
+  const handleDelete = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await axiosSecure
+          .delete(`/delete-issue/${issue._id}`)
+          .then(() => {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your file has been deleted.",
+              icon: "success",
+            });
+            navigate("/dashboard/citizen/my-issues");
+          })
+          .catch((err) => {
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: { err },
+              footer: '<a href="#">Why do I have this issue?</a>',
+            });
+          });
+      }
+    });
   };
 
   return (
@@ -117,7 +155,10 @@ const IssueDetails = () => {
         <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
           Edit
         </button>
-        <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition">
+        <button
+          onClick={handleDelete}
+          className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+        >
           Delete
         </button>
       </div>
