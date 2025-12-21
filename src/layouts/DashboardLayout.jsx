@@ -8,7 +8,7 @@ import { Link, Outlet } from "react-router";
 const DashboardLayout = () => {
   const { user } = useAuth();
   return (
-    <div className="drawer lg:drawer-open -mt-5">
+    <div className="drawer lg:drawer-open ">
       <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content">
         {/* Navbar */}
@@ -76,18 +76,19 @@ const DashboardLayout = () => {
             </li>
             {/* List item */}
             <li>
-              <button
+              <Link
+                to="/dashboard/citizen/my-issues"
                 className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                 data-tip="My Issues"
               >
                 {/* My Issues icon */}
                 <MdMenuBook className="text-xl" />
                 <span className="is-drawer-close:hidden">My Issues</span>
-              </button>
+              </Link>
             </li>
             <li>
               <Link
-                to="/dashboard/report-issue"
+                to="/dashboard/citizen/report-issue"
                 className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                 data-tip="Report Issue"
               >

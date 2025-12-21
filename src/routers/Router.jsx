@@ -3,13 +3,14 @@ import { createBrowserRouter } from "react-router";
 import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/home/Home.jsx";
 import AllIssues from "../pages/all-issues/AllIssues";
-import ReportIssue from "../pages/report-issue/ReportIssue";
+import ReportIssue from "../pages/dashboard/citizen/ReportIssue.jsx";
 import AboutUs from "../pages/about-us/AboutUs";
 import Login from "../pages/authentication/login/Login";
 import Register from "../pages/authentication/register/Register";
 import AuthLayout from "../layouts/AuthLayout.jsx";
 import DashboardLayout from "../layouts/DashboardLayout.jsx";
 import PrivateRoute from "./PrivateRoute.jsx";
+import MyIssues from "../pages/dashboard/citizen/MyIssues.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -49,10 +50,18 @@ const Router = createBrowserRouter([
     element: <DashboardLayout></DashboardLayout>,
     children: [
       {
-        path: "/dashboard/report-issue",
+        path: "/dashboard/citizen/report-issue",
         element: (
           <PrivateRoute>
             <ReportIssue></ReportIssue>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/citizen/my-issues",
+        element: (
+          <PrivateRoute>
+            <MyIssues></MyIssues>
           </PrivateRoute>
         ),
       },

@@ -12,7 +12,7 @@ const MainLayout = () => {
     return <Loading></Loading>;
   }
   return (
-    <div>
+    <div className="max-w-7xl mx-auto mt-5">
       <Navbar></Navbar>
       <div>
         <Outlet></Outlet>
