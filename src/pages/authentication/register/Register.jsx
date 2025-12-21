@@ -7,7 +7,8 @@ import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const Register = () => {
-  const { registerUser, signInGoogle, updateUser, loading } = useAuth();
+  const { registerUser, signInGoogle, updateUser, loading, setLoading } =
+    useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
@@ -40,7 +41,9 @@ const Register = () => {
                 name: data.name,
                 photo: res.data.data.url,
                 email: data.email,
-                role: "user",
+                role: "citizen",
+                status: "free",
+                issue_count: 0,
               };
 
               axiosSecure.post("/register", user).then(() => {
@@ -51,6 +54,7 @@ const Register = () => {
                   showConfirmButton: false,
                   timer: 1500,
                 });
+                setLoading(false);
                 navigate("/");
               });
             })
@@ -60,6 +64,7 @@ const Register = () => {
                 title: "Error 500: Internal Server Error",
                 text: "Could not complete registration!",
               });
+              setLoading(false);
             });
         });
         // Updating User Profile

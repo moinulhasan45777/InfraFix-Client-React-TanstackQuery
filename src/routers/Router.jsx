@@ -8,6 +8,8 @@ import AboutUs from "../pages/about-us/AboutUs";
 import Login from "../pages/authentication/login/Login";
 import Register from "../pages/authentication/register/Register";
 import AuthLayout from "../layouts/AuthLayout.jsx";
+import DashboardLayout from "../layouts/DashboardLayout.jsx";
+import PrivateRoute from "./PrivateRoute.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -21,10 +23,6 @@ const Router = createBrowserRouter([
       {
         path: "/all-issues",
         Component: AllIssues,
-      },
-      {
-        path: "/report-issue",
-        Component: ReportIssue,
       },
       {
         path: "/about-us",
@@ -43,6 +41,20 @@ const Router = createBrowserRouter([
       {
         path: "/auth/register",
         Component: Register,
+      },
+    ],
+  },
+  {
+    path: "/dashboard",
+    element: <DashboardLayout></DashboardLayout>,
+    children: [
+      {
+        path: "/dashboard/report-issue",
+        element: (
+          <PrivateRoute>
+            <ReportIssue></ReportIssue>
+          </PrivateRoute>
+        ),
       },
     ],
   },
