@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { Link, useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 const MyIssues = () => {
   const { user } = useAuth();
@@ -26,7 +27,7 @@ const MyIssues = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const statuses = ["Pending", "In Progress", "Resolved", "Closed"];
 
-  const { data: issues = [] } = useQuery({
+  const { data: issues = [], refetch } = useQuery({
     queryKey: ["myIssues", user?.email],
     queryFn: async () => {
       const res = await axiosSecure.get(`/my-issues?email=${user.email}`);
@@ -40,6 +41,39 @@ const MyIssues = () => {
       (selectedCategory ? issue.category === selectedCategory : true)
     );
   });
+
+  const handleDelete = (issue) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await axiosSecure
+          .delete(`/delete-issue/${issue._id}`)
+          .then(() => {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Your file has been deleted.",
+              icon: "success",
+            });
+            refetch();
+          })
+          .catch((err) => {
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: { err },
+              footer: '<a href="#">Why do I have this issue?</a>',
+            });
+          });
+      }
+    });
+  };
 
   return (
     <div className="p-4 md:p-6 max-w-7xl">
@@ -128,7 +162,10 @@ const MyIssues = () => {
                       <button className="px-3 py-1 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200">
                         Edit
                       </button>
-                      <button className="px-3 py-1 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200">
+                      <button
+                        onClick={() => handleDelete(issue)}
+                        className="px-3 py-1 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200"
+                      >
                         Delete
                       </button>
                     </div>
