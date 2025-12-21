@@ -65,14 +65,15 @@ const DashboardLayout = () => {
 
             {/* List item */}
             <li>
-              <button
+              <Link
+                to="/dashboard/citizen/profile"
                 className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                 data-tip="Profile"
               >
                 {/* Profile icon */}
                 <CgProfile className="text-xl" />
                 <span className="is-drawer-close:hidden">Profile</span>
-              </button>
+              </Link>
             </li>
             {/* List item */}
             <li>
