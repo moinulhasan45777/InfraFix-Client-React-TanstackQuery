@@ -29,14 +29,21 @@ const CitizenProfile = () => {
     }).then(async (result) => {
       await axiosSecure
         .patch(`/update-citizen/${citizen[0]._id}`, { status: "Paid" })
-        .then(() => {
+        .then(async () => {
           if (result.isConfirmed) {
-            Swal.fire({
-              title: "Subscribed!",
-              text: "Subscription Completed",
-              icon: "success",
+            const newPayment = {
+              paymentType: "Subscription",
+              paymentBy: user.email,
+              paymentAmount: 1000,
+            };
+            await axiosSecure.post("/payment", newPayment).then(() => {
+              Swal.fire({
+                title: "Subscribed!",
+                text: "Subscription Completed",
+                icon: "success",
+              });
+              refetch();
             });
-            refetch();
           }
         });
     });

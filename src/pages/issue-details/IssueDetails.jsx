@@ -164,12 +164,14 @@ const IssueDetails = () => {
               {issue.priority || "Low"}
             </span>
           </div>
-          <button
-            onClick={handleBoost}
-            className="px-3 py-1 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700 transition mt-5 sm:mt-0"
-          >
-            Boost Issue
-          </button>
+          {issue?.priority != "High" && (
+            <button
+              onClick={handleBoost}
+              className="px-3 py-1 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700 transition mt-5 sm:mt-0"
+            >
+              Boost Issue
+            </button>
+          )}
         </div>
       </div>
 
