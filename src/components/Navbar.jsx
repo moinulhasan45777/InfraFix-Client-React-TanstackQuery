@@ -1,8 +1,13 @@
 import React from "react";
 import { Link, NavLink } from "react-router";
 import logo from "../assets/Logo.png";
+import useAuth from "../hooks/useAuth";
 
 const Navbar = () => {
+  const { user } = useAuth();
+  if (user) {
+    console.log(user.photoURL);
+  }
   const links = (
     <>
       <li>
@@ -21,6 +26,7 @@ const Navbar = () => {
       </li>
     </>
   );
+
   return (
     <div className="mb-5 navbar bg-primary text-black shadow-sm rounded-xl px-5">
       <div className="navbar-start">
@@ -59,12 +65,39 @@ const Navbar = () => {
         </ul>
       </div>
       <div className="navbar-end">
-        <Link
-          to="/auth/login"
-          className="btn btn-secondary rounded px-8 py-5 text-base"
-        >
-          Login
-        </Link>
+        {user ? (
+          <div className="dropdown dropdown-end">
+            <div tabIndex={0} role="button" className="m-1">
+              <img
+                src={user.photoURL}
+                alt="Profile Picture"
+                className="w-12 h-12 rounded-full border-2 border-secondary cursor-pointer"
+                referrerPolicy="no-referrer"
+              />
+            </div>
+            <ul
+              tabIndex="-1"
+              className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
+            >
+              <li>
+                <NavLink to="/profile">{user.displayName}</NavLink>
+              </li>
+              <li>
+                <NavLink to="/dashboard">Dashboard</NavLink>
+              </li>
+              <li>
+                <button>Logout</button>
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <Link
+            to="/auth/login"
+            className="btn btn-secondary rounded px-8 py-5 text-base"
+          >
+            Login
+          </Link>
+        )}
       </div>
     </div>
   );
