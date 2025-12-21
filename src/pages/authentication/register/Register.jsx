@@ -1,11 +1,15 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import useAuth from "../../../hooks/useAuth";
 import axios from "axios";
+import Swal from "sweetalert2";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
 
 const Register = () => {
-  const { registerUser, signInGoogle, updateUser } = useAuth();
+  const { registerUser, signInGoogle, updateUser, loading } = useAuth();
+  const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
 
   const {
     register,
@@ -17,8 +21,7 @@ const Register = () => {
     const profileImage = data.photo[0];
 
     registerUser(data.email, data.password)
-      .then((result) => {
-        console.log(result.user);
+      .then(() => {
         // Store the image and get the photo url
         const formData = new FormData();
         formData.append("image", profileImage);
@@ -26,34 +29,76 @@ const Register = () => {
           import.meta.env.VITE_image_host_key
         }`;
         axios.post(imageApiUrl, formData).then((res) => {
-          console.log("after iamge upload", res.data);
           const userProfile = {
             displayName: data.name,
             photoURL: res.data.data.url,
           };
 
           updateUser(userProfile)
-            .then((result) => {
-              console.log(result);
+            .then(() => {
+              const user = {
+                name: data.name,
+                photo: res.data.data.url,
+                email: data.email,
+                role: "user",
+              };
+
+              axiosSecure.post("/register", user).then(() => {
+                Swal.fire({
+                  position: "center",
+                  icon: "success",
+                  title: "Registration Complete!",
+                  showConfirmButton: false,
+                  timer: 1500,
+                });
+                navigate("/");
+              });
             })
-            .catch((error) => {
-              console.log(error);
+            .catch(() => {
+              Swal.fire({
+                icon: "error",
+                title: "Error 500: Internal Server Error",
+                text: "Could not complete registration!",
+              });
             });
         });
         // Updating User Profile
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        Swal.fire({
+          icon: "error",
+          title: "Error 500: Internal Server Error",
+          text: "Could not complete registration!",
+        });
       });
   };
 
   const handleSignInGoogle = () => {
     signInGoogle()
       .then((result) => {
-        console.log(result);
+        const user = {
+          name: result.user.displayName,
+          photo: result.user.photoURL,
+          email: result.user.email,
+          role: "user",
+        };
+        axiosSecure.post("/register", user).then(() => {
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: "Registration Complete!",
+            showConfirmButton: false,
+            timer: 1500,
+          });
+          navigate("/");
+        });
       })
-      .catch((error) => {
-        console.log(error);
+      .catch(() => {
+        Swal.fire({
+          icon: "error",
+          title: "Error 500: Internal Server Error",
+          text: "Could not complete registration!",
+        });
       });
   };
 
@@ -107,7 +152,9 @@ const Register = () => {
           {errors.password?.type === "minLength" && (
             <p className="text-red-500">Password must be 6 characters long!</p>
           )}
-          <button className="btn btn-secondary mt-4 mb-2">Register</button>
+          <button disabled={loading} className="btn btn-secondary mt-4 mb-2">
+            Register
+          </button>
           <div className="flex items-center gap-2">
             <div className="h-px w-full bg-primary"></div>
             <p className="font-bold">OR</p>
