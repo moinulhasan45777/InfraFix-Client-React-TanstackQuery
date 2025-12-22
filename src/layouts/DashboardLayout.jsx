@@ -138,7 +138,7 @@ const DashboardLayout = () => {
                 <Link
                   to="/dashboard/admin/all-issues"
                   className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                  data-tip="My Issues"
+                  data-tip="All Issues"
                 >
                   {/* My Issues icon */}
                   <MdMenuBook className="text-xl" />
@@ -149,7 +149,7 @@ const DashboardLayout = () => {
                 <Link
                   to="/dashboard/admin/manage-staffs"
                   className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                  data-tip="Report Issue"
+                  data-tip="Manage Staffs"
                 >
                   {/* My Issues icon */}
                   <GrUserWorker className="text-xl" />
@@ -160,7 +160,7 @@ const DashboardLayout = () => {
                 <Link
                   to="/dashboard/admin/manage-users"
                   className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                  data-tip="Report Issue"
+                  data-tip="Manage Users"
                 >
                   {/* My Issues icon */}
                   <FaUser className="text-xl" />
@@ -171,7 +171,7 @@ const DashboardLayout = () => {
                 <Link
                   to="/dashboard/admin/all-payments"
                   className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                  data-tip="Report Issue"
+                  data-tip="All Payments"
                 >
                   {/* My Issues icon */}
                   <MdOutlinePayment className="text-xl" />

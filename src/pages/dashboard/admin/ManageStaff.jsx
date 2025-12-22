@@ -1,8 +1,40 @@
 import React from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 
 const ManageStaff = () => {
+  const axiosSecure = useAxiosSecure();
+  const { data: staffs = [], refetch } = useQuery({
+    queryKey: ["allStaffs"],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/staffs`);
+      return res.data;
+    },
+  });
+
+  const handleDelete = () => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Deleted!",
+          text: "Staff has been deleted.",
+          icon: "success",
+        });
+      }
+    });
+  };
+
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -33,50 +65,57 @@ const ManageStaff = () => {
           </thead>
 
           <tbody className="divide-y text-sm text-gray-700">
-            <tr className="hover:bg-gray-50 transition">
-              <td className="px-6 py-4 font-medium">John Doe</td>
-              <td className="px-6 py-4">john.doe@example.com</td>
-              <td className="px-6 py-4">
-                <div className="flex justify-center gap-2">
-                  <button className="btn btn-sm btn-outline btn-info flex items-center gap-1">
-                    <Pencil size={14} />
-                    Update
-                  </button>
-                  <button className="btn btn-sm btn-outline btn-error flex items-center gap-1">
-                    <Trash2 size={14} />
-                    Delete
-                  </button>
-                </div>
-              </td>
-            </tr>
+            {staffs.map((staff) => (
+              <tr key={staff.email} className="hover:bg-gray-50 transition">
+                <td className="px-6 py-4 font-medium">{staff.name}</td>
+                <td className="px-6 py-4">{staff.email}</td>
+                <td className="px-6 py-4">
+                  <div className="flex justify-center gap-2">
+                    <button className="btn btn-sm btn-outline btn-info flex items-center gap-1">
+                      <Pencil size={14} />
+                      Update
+                    </button>
+                    <button className="btn btn-sm btn-outline btn-error flex items-center gap-1">
+                      <Trash2 size={14} />
+                      Delete
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
 
       {/* Mobile Card Layout */}
       <div className="md:hidden space-y-4">
-        <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4">
-          <div className="mb-3">
-            <p className="text-xs text-gray-500">Name</p>
-            <p className="font-medium text-gray-800">John Doe</p>
-          </div>
+        {staffs.map((staff) => (
+          <div
+            key={staff.email}
+            className="bg-white border border-gray-200 rounded-xl shadow-sm p-4"
+          >
+            <div className="mb-3">
+              <p className="text-xs text-gray-500">Name</p>
+              <p className="font-medium text-gray-800">{staff.name}</p>
+            </div>
 
-          <div className="mb-4">
-            <p className="text-xs text-gray-500">Email</p>
-            <p className="text-sm text-gray-700">john.doe@example.com</p>
-          </div>
+            <div className="mb-4">
+              <p className="text-xs text-gray-500">Email</p>
+              <p className="text-sm text-gray-700">{staff.email}</p>
+            </div>
 
-          <div className="flex gap-2">
-            <button className="btn btn-sm btn-outline btn-info flex-1 flex items-center justify-center gap-1">
-              <Pencil size={14} />
-              Update
-            </button>
-            <button className="btn btn-sm btn-outline btn-error flex-1 flex items-center justify-center gap-1">
-              <Trash2 size={14} />
-              Delete
-            </button>
+            <div className="flex gap-2">
+              <button className="btn btn-sm btn-outline btn-info flex-1 flex items-center justify-center gap-1">
+                <Pencil size={14} />
+                Update
+              </button>
+              <button className="btn btn-sm btn-outline btn-error flex-1 flex items-center justify-center gap-1">
+                <Trash2 size={14} />
+                Delete
+              </button>
+            </div>
           </div>
-        </div>
+        ))}
       </div>
     </div>
   );

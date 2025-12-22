@@ -7,15 +7,7 @@ import useAuth from "../../../hooks/useAuth";
 import { Link, useNavigate } from "react-router";
 
 const AddStaff = () => {
-  const {
-    registerUser,
-    updateUser,
-    loading,
-    setLoading,
-    logOut,
-    user,
-    signInUser,
-  } = useAuth();
+  const { loading } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
@@ -48,6 +40,7 @@ const AddStaff = () => {
           showConfirmButton: false,
           timer: 1500,
         });
+        navigate("/dashboard/admin/manage-staffs");
       });
     });
   };
