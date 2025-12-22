@@ -15,7 +15,7 @@ const ManageStaff = () => {
     },
   });
 
-  const handleDelete = () => {
+  const handleDelete = (email) => {
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -24,12 +24,15 @@ const ManageStaff = () => {
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
-    }).then((result) => {
+    }).then(async (result) => {
       if (result.isConfirmed) {
-        Swal.fire({
-          title: "Deleted!",
-          text: "Staff has been deleted.",
-          icon: "success",
+        await axiosSecure.delete(`/delete-staff/${email}`).then(() => {
+          Swal.fire({
+            title: "Deleted!",
+            text: "Staff has been deleted.",
+            icon: "success",
+          });
+          refetch();
         });
       }
     });
@@ -75,7 +78,10 @@ const ManageStaff = () => {
                       <Pencil size={14} />
                       Update
                     </button>
-                    <button className="btn btn-sm btn-outline btn-error flex items-center gap-1">
+                    <button
+                      onClick={() => handleDelete(staff.email)}
+                      className="btn btn-sm btn-outline btn-error flex items-center gap-1"
+                    >
                       <Trash2 size={14} />
                       Delete
                     </button>
