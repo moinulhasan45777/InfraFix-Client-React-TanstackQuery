@@ -181,7 +181,10 @@ const ReportIssue = () => {
         </div>
 
         {/* Submit Button */}
-        <button className="w-full btn btn-secondary  py-2 rounded-m ">
+        <button
+          disabled={citizen[0].blocked == "yes"}
+          className="w-full btn btn-secondary  py-2 rounded-m "
+        >
           Submit Issue
         </button>
       </form>

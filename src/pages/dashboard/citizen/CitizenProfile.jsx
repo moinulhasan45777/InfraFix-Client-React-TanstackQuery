@@ -148,7 +148,11 @@ const CitizenProfile = () => {
         </div>
 
         {/* Update Button */}
-        <button type="submit" className="btn btn-primary w-full mt-4">
+        <button
+          disabled={citizen[0]?.blocked == "yes"}
+          type="submit"
+          className="btn btn-primary w-full mt-4"
+        >
           Update Profile
         </button>
       </form>
@@ -157,7 +161,7 @@ const CitizenProfile = () => {
       <div className="my-6 border-t border-gray-200" />
 
       {/* Warning Section */}
-      {citizen[0]?.status === "Blocked" && (
+      {citizen[0]?.blocked == "yes" && (
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex gap-3">
           <AlertTriangle className="text-yellow-600 mt-1" size={20} />
           <div>

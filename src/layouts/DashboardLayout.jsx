@@ -4,14 +4,30 @@ import { CgProfile } from "react-icons/cg";
 import { MdMenuBook } from "react-icons/md";
 import { MdReportProblem } from "react-icons/md";
 import useAuth from "../hooks/useAuth";
-import { Link, Outlet } from "react-router";
+import { Link, Outlet, useNavigate } from "react-router";
 import useRole from "../hooks/useRole";
 import { GrUserWorker } from "react-icons/gr";
 import { FaUser } from "react-icons/fa";
 import { MdOutlinePayment } from "react-icons/md";
+import { FaHome } from "react-icons/fa";
+import { IoIosLogOut } from "react-icons/io";
+import Swal from "sweetalert2";
 const DashboardLayout = () => {
-  const { user } = useAuth();
+  const { user, logOut } = useAuth();
   const { role } = useRole();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logOut().then(() => {
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Logged out successfully!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    });
+    navigate("/");
+  };
   return (
     <div className="drawer lg:drawer-open ">
       <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
@@ -58,6 +74,17 @@ const DashboardLayout = () => {
           {role.role == "citizen" ? (
             <ul className="menu w-full grow">
               {/* List item */}
+              <li>
+                <Link
+                  to="/"
+                  className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                  data-tip="Home"
+                >
+                  {/* Dashboard icon */}
+                  <FaHome className="text-xl" />
+                  <span className="is-drawer-close:hidden">Home</span>
+                </Link>
+              </li>
               <li>
                 <Link
                   to="/dashboard/citizen"
@@ -108,6 +135,17 @@ const DashboardLayout = () => {
             </ul>
           ) : role.role == "admin" ? (
             <ul className="menu w-full grow">
+              <li>
+                <Link
+                  to="/"
+                  className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                  data-tip="Home"
+                >
+                  {/* Dashboard icon */}
+                  <FaHome className="text-xl" />
+                  <span className="is-drawer-close:hidden">Home</span>
+                </Link>
+              </li>
               {/* List item */}
               <li>
                 <Link
@@ -181,6 +219,17 @@ const DashboardLayout = () => {
             </ul>
           ) : (
             <ul className="menu w-full grow">
+              <li>
+                <Link
+                  to="/"
+                  className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                  data-tip="Home"
+                >
+                  {/* Dashboard icon */}
+                  <FaHome className="text-xl" />
+                  <span className="is-drawer-close:hidden">Home</span>
+                </Link>
+              </li>
               {/* List item */}
               <li>
                 <Link
@@ -222,6 +271,16 @@ const DashboardLayout = () => {
               </li>
             </ul>
           )}
+          <button
+            onClick={() => handleLogout()}
+            to="/dashboard/staff/assigned-issues"
+            className="is-drawer-close:tooltip is-drawer-close:tooltip-right flex items-center gap-4 cursor-pointer"
+            data-tip="Log out"
+          >
+            {/* My Issues icon */}
+            <IoIosLogOut className="text-xl ml-4 mb-4" />
+            <span className="is-drawer-close:hidden -mt-4">Log out</span>
+          </button>
         </div>
       </div>
     </div>

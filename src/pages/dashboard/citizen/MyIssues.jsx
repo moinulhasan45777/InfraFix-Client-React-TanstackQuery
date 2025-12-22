@@ -38,6 +38,13 @@ const MyIssues = () => {
       return res.data;
     },
   });
+  const { data: citizen = [] } = useQuery({
+    queryKey: ["citizen", user?.email],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/citizen?email=${user.email}`);
+      return res.data;
+    },
+  });
 
   const filteredIssues = issues.filter((issue) => {
     return (
@@ -187,27 +194,30 @@ const MyIssues = () => {
                 <td className="px-4 py-3">
                   <div className="flex items-center justify-center gap-2 flex-wrap">
                     <button
+                      disabled={citizen[0]?.blocked == "yes"}
                       onClick={() =>
                         navigate("/issue-details", { state: { issue } })
                       }
-                      className="px-3 py-1 text-xs rounded-md bg-blue-100 text-blue-700 hover:bg-blue-200"
+                      className="px-3 py-1 text-xs rounded-md disabled:bg-gray-300 disabled:text-gray-400 bg-blue-100 text-blue-700 hover:bg-blue-200"
                     >
                       View
                     </button>
                     {issue.status == "Pending" && (
                       <>
                         <button
+                          disabled={citizen[0]?.blocked == "yes"}
                           onClick={() => {
                             setModalIssue(issue);
                             document.getElementById("my_modal_1").showModal();
                           }}
-                          className="px-3 py-1 text-xs rounded-md bg-green-100 text-green-700 hover:bg-green-200"
+                          className="px-3 py-1 text-xs rounded-md bg-green-100 text-green-700 disabled:text-gray-400  hover:bg-green-200 disabled:bg-gray-300"
                         >
                           Edit
                         </button>
                         <button
+                          disabled={citizen[0]?.blocked == "yes"}
                           onClick={() => handleDelete(issue)}
-                          className="px-3 py-1 text-xs rounded-md bg-red-100 text-red-700 hover:bg-red-200"
+                          className="px-3 disabled:bg-gray-300 py-1 text-xs rounded-md bg-red-100 disabled:text-gray-400 text-red-700 hover:bg-red-200"
                         >
                           Delete
                         </button>
@@ -282,6 +292,7 @@ const MyIssues = () => {
             <select
               id="category"
               name="category"
+              disabled={citizen[0]?.blocked == "yes"}
               className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
               value={modalIssue?.category || ""}
               onChange={(e) =>
@@ -322,13 +333,15 @@ const MyIssues = () => {
           <div className="modal-action justify-between">
             <button
               type="button"
+              disabled={citizen[0]?.blocked == "yes"}
               className="btn btn-ghost"
               onClick={() => document.getElementById("my_modal_1").close()}
             >
               Cancel
             </button>
             <button
-              className="btn btn-primary"
+              disabled={citizen[0]?.blocked == "yes"}
+              className="btn btn-primary disabled:bg-gray-500"
               // handle form submission here
             >
               Update Issue

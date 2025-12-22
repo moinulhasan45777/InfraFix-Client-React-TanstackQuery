@@ -3,10 +3,19 @@ import { Link, NavLink } from "react-router";
 import logo from "../assets/Logo.png";
 import useAuth from "../hooks/useAuth";
 import Swal from "sweetalert2";
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../hooks/useAxiosSecure";
 
 const Navbar = () => {
   const { user, logOut } = useAuth();
-
+  const axiosSecure = useAxiosSecure();
+  const { data: users = [] } = useQuery({
+    queryKey: ["allUsers"],
+    queryFn: async () => {
+      const res = await axiosSecure.get("/users");
+      return res.data;
+    },
+  });
   const links = (
     <>
       <li>
@@ -92,10 +101,22 @@ const Navbar = () => {
               className="dropdown-content menu bg-base-100 rounded-box z-1 w-52 p-2 shadow-sm"
             >
               <li>
-                <NavLink to="/profile">{user.displayName}</NavLink>
+                <NavLink
+                  to={`/dashboard/${
+                    users.filter((u) => u.email == user.email)[0]?.role
+                  }/profile`}
+                >
+                  {user.displayName}
+                </NavLink>
               </li>
               <li>
-                <NavLink to="/dashboard">Dashboard</NavLink>
+                <NavLink
+                  to={`/dashboard/${
+                    users.filter((u) => u.email == user.email)[0]?.role
+                  }`}
+                >
+                  Dashboard
+                </NavLink>
               </li>
               <li>
                 <button onClick={handleLogOut}>Logout</button>

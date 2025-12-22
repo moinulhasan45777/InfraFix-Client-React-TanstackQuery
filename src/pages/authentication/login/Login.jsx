@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { signInUser } = useAuth();
+  const { signInUser, setLoading } = useAuth();
   const {
     register,
     handleSubmit,
@@ -32,6 +32,7 @@ const Login = () => {
           title: "Error 500: Internal Server Error",
           text: "Could not Log in!",
         });
+        setLoading(false);
       });
   };
   return (
@@ -61,14 +62,7 @@ const Login = () => {
           {errors.password?.type === "required" && (
             <p className="text-red-500">Password is required!</p>
           )}
-          <div>
-            <Link
-              to="/auth/forgot-password"
-              className="link link-hover text-secondary underline underline-offset-3 hover:no-underline"
-            >
-              Forgot password?
-            </Link>
-          </div>
+          <div></div>
           <button className="btn btn-secondary mt-4 mb-4">Login</button>
           <p className="text-center text-sm">
             Don't have an account?{" "}
