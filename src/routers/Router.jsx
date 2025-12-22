@@ -20,6 +20,10 @@ import ManageUsers from "../pages/dashboard/admin/ManageUsers.jsx";
 import Payments from "../pages/dashboard/admin/Payments.jsx";
 import AdminProfile from "../pages/dashboard/admin/AdminProfile.jsx";
 import AdminIssues from "../pages/dashboard/admin/AdminIssues.jsx";
+import AdminDashboard from "../pages/dashboard/admin/AdminDashboard.jsx";
+import StaffDashboard from "../pages/dashboard/staff/StaffDashboard.jsx";
+import StaffProfile from "../pages/dashboard/staff/StaffProfile.jsx";
+import AssignedIssues from "../pages/dashboard/staff/AssignedIssues.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -71,6 +75,38 @@ const Router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <CitizenDashboard></CitizenDashboard>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/staff",
+        element: (
+          <PrivateRoute>
+            <StaffDashboard></StaffDashboard>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/staff/profile",
+        element: (
+          <PrivateRoute>
+            <StaffProfile></StaffProfile>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/staff/assigned-issues",
+        element: (
+          <PrivateRoute>
+            <AssignedIssues></AssignedIssues>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/admin",
+        element: (
+          <PrivateRoute>
+            <AdminDashboard></AdminDashboard>
           </PrivateRoute>
         ),
       },

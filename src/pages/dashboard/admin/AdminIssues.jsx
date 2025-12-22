@@ -50,7 +50,7 @@ const AdminIssues = () => {
       confirmButtonText: "Yes, Proceed!",
     }).then(async (result) => {
       const newStatus = {
-        status: "Closed",
+        status: "Rejected",
       };
       await axiosSecure.patch(`/reject-issue/${id}`, newStatus).then(() => {
         if (result.isConfirmed) {

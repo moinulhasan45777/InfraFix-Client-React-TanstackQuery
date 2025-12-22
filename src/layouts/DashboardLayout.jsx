@@ -180,7 +180,47 @@ const DashboardLayout = () => {
               </li>
             </ul>
           ) : (
-            <p>Hello</p>
+            <ul className="menu w-full grow">
+              {/* List item */}
+              <li>
+                <Link
+                  to="/dashboard/staff"
+                  className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                  data-tip="Dashboard"
+                >
+                  {/* Dashboard icon */}
+                  <RiDashboardLine className="text-xl" />
+                  <span className="is-drawer-close:hidden">Dashboard</span>
+                </Link>
+              </li>
+
+              {/* List item */}
+              <li>
+                <Link
+                  to="/dashboard/staff/profile"
+                  className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                  data-tip="Profile"
+                >
+                  {/* Profile icon */}
+                  <CgProfile className="text-xl" />
+                  <span className="is-drawer-close:hidden">Profile</span>
+                </Link>
+              </li>
+              {/* List item */}
+              <li>
+                <Link
+                  to="/dashboard/staff/assigned-issues"
+                  className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
+                  data-tip="All Issues"
+                >
+                  {/* My Issues icon */}
+                  <MdMenuBook className="text-xl" />
+                  <span className="is-drawer-close:hidden">
+                    Assigned Issues
+                  </span>
+                </Link>
+              </li>
+            </ul>
           )}
         </div>
       </div>
