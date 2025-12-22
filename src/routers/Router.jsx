@@ -24,6 +24,7 @@ import AdminDashboard from "../pages/dashboard/admin/AdminDashboard.jsx";
 import StaffDashboard from "../pages/dashboard/staff/StaffDashboard.jsx";
 import StaffProfile from "../pages/dashboard/staff/StaffProfile.jsx";
 import AssignedIssues from "../pages/dashboard/staff/AssignedIssues.jsx";
+import ContactUs from "../pages/contact-us/ContactUs.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -41,6 +42,10 @@ const Router = createBrowserRouter([
       {
         path: "/about-us",
         Component: AboutUs,
+      },
+      {
+        path: "/contact-us",
+        Component: ContactUs,
       },
       {
         path: "/issue-details",
