@@ -161,7 +161,7 @@ const IssueDetails = () => {
                 priorityColors[issue.priority] || "bg-green-100 text-green-700"
               }`}
             >
-              {issue.priority || "Low"}
+              {issue.priority || "Normal"}
             </span>
           </div>
           {issue?.priority != "High" && (

@@ -211,7 +211,7 @@ const DashboardLayout = () => {
                 <Link
                   to="/dashboard/staff/assigned-issues"
                   className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
-                  data-tip="All Issues"
+                  data-tip="Assigned Issues"
                 >
                   {/* My Issues icon */}
                   <MdMenuBook className="text-xl" />
