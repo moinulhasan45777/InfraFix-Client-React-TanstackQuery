@@ -2,8 +2,10 @@ import React from "react";
 import useAuth from "../../../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useTitle from "../../../hooks/useTitle";
 
 const CitizenDashboard = () => {
+  useTitle("Citizen Dashboard");
   const { user, loading } = useAuth();
   const axiosSecure = useAxiosSecure();
   const { data: issues = [] } = useQuery({

@@ -5,8 +5,10 @@ import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
+import useTitle from "../../../hooks/useTitle";
 
 const ManageStaff = () => {
+  useTitle("Manage Staff");
   const { updateUser, setLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
   const { data: staffs = [], refetch } = useQuery({

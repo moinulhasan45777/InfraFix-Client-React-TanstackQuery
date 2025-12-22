@@ -3,8 +3,10 @@ import { useLocation, useNavigate } from "react-router";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import useAuth from "../../hooks/useAuth";
+import useTitle from "../../hooks/useTitle";
 
 const IssueDetails = () => {
+  useTitle("Issue Details");
   const navigate = useNavigate();
   const location = useLocation();
   const axiosSecure = useAxiosSecure();

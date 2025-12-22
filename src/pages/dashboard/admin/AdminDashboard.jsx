@@ -1,8 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useTitle from "../../../hooks/useTitle";
 
 const AdminDashboard = () => {
+  useTitle("Admin Dashboard");
   const axiosSecure = useAxiosSecure();
   const { data: issues = [] } = useQuery({
     queryKey: ["Allissues"],

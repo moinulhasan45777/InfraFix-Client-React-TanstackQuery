@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
+import useTitle from "../../../hooks/useTitle";
 
 const Payments = () => {
+  useTitle("All Payments");
   const axiosSecure = useAxiosSecure();
   const [paymentType, setPaymentType] = useState("");
 

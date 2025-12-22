@@ -4,8 +4,10 @@ import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useNavigate } from "react-router";
 import Swal from "sweetalert2";
+import useTitle from "../../../hooks/useTitle";
 
 const MyIssues = () => {
+  useTitle("My Issues");
   const { user } = useAuth();
   const navigate = useNavigate();
   const axiosSecure = useAxiosSecure();

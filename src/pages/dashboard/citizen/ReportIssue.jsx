@@ -6,8 +6,10 @@ import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import useTitle from "../../../hooks/useTitle";
 
 const ReportIssue = () => {
+  useTitle("Report Issue");
   const navigate = useNavigate();
   const { user } = useAuth();
   const issueCategories = [

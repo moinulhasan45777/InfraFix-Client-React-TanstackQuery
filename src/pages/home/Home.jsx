@@ -5,8 +5,10 @@ import Features from "./Features";
 import HowItWorks from "./HowItWorks";
 import WhyInfraFix from "./WhyInfraFix";
 import WhoUsesInfraFix from "./Who";
+import useTitle from "../../hooks/useTitle";
 
 const Home = () => {
+  useTitle("Home");
   return (
     <div>
       <Banner></Banner>

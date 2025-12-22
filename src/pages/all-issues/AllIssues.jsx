@@ -5,8 +5,10 @@ import { ThumbsUp, MapPin } from "lucide-react";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
+import useTitle from "../../hooks/useTitle";
 
 const AllIssues = () => {
+  useTitle("All Issues");
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 

@@ -5,8 +5,10 @@ import useAuth from "../../../hooks/useAuth";
 import axios from "axios";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useTitle from "../../../hooks/useTitle";
 
 const Register = () => {
+  useTitle("Register");
   const { registerUser, signInGoogle, updateUser, loading, setLoading } =
     useAuth();
   const axiosSecure = useAxiosSecure();

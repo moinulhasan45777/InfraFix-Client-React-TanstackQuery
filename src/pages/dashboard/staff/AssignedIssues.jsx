@@ -3,8 +3,10 @@ import React, { useEffect, useRef, useState } from "react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
+import useTitle from "../../../hooks/useTitle";
 
 const AssignedIssues = () => {
+  useTitle("Assigned Issues");
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
 

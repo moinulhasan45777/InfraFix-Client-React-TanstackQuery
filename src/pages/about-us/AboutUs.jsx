@@ -1,7 +1,9 @@
 import React from "react";
 import infrastructureImg from "../../assets/authBanner.png";
+import useTitle from "../../hooks/useTitle";
 
 const AboutUs = () => {
+  useTitle("About Us");
   return (
     <div className="bg-gray-50 min-h-screen text-gray-800">
       {/* Hero Section */}

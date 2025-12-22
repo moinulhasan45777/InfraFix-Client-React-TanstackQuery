@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { useQuery } from "@tanstack/react-query";
+import useTitle from "../../../hooks/useTitle";
 
 const AdminIssues = () => {
+  useTitle("All Issues");
   const axiosSecure = useAxiosSecure();
   const [selectedIssue, setSelectedIssue] = useState(null);
 

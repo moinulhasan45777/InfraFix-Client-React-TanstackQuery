@@ -3,8 +3,10 @@ import React from "react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { Link } from "react-router";
 import Swal from "sweetalert2";
+import useTitle from "../../../hooks/useTitle";
 
 const ManageUsers = () => {
+  useTitle("Manage Users");
   const axiosSecure = useAxiosSecure();
   const { data: citizens = [], refetch } = useQuery({
     queryKey: ["allUsers"],

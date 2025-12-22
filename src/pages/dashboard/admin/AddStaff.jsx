@@ -5,8 +5,10 @@ import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useAuth from "../../../hooks/useAuth";
 import { Link, useNavigate } from "react-router";
+import useTitle from "../../../hooks/useTitle";
 
 const AddStaff = () => {
+  useTitle("Add Staff");
   const { loading } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();

@@ -4,8 +4,10 @@ import useAuth from "../../../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import useTitle from "../../../hooks/useTitle";
 
 const CitizenProfile = () => {
+  useTitle("Citizen Profile");
   const { user, updateUser, setLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
 

@@ -3,8 +3,10 @@ import React from "react";
 import Swal from "sweetalert2";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import useTitle from "../../../hooks/useTitle";
 
 const AdminProfile = () => {
+  useTitle("Profile");
   const { user, updateUser, setLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
 
