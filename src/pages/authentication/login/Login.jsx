@@ -24,11 +24,7 @@ const Login = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        if (location.state) {
-          navigate(location.state?.location);
-        } else {
-          navigate("/");
-        }
+        navigate(`${location.state ? location.state : "/"}`);
       })
       .catch(() => {
         Swal.fire({
