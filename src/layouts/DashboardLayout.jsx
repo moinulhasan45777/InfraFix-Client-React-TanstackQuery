@@ -169,7 +169,7 @@ const DashboardLayout = () => {
               </li>
               <li>
                 <Link
-                  to="/dashboard/admin/all-payments"
+                  to="/dashboard/admin/payments"
                   className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                   data-tip="All Payments"
                 >

@@ -17,6 +17,7 @@ import CitizenDashboard from "../pages/dashboard/citizen/CitizenDashboard.jsx";
 import ManageStaff from "../pages/dashboard/admin/ManageStaff.jsx";
 import AddStaff from "../pages/dashboard/admin/AddStaff.jsx";
 import ManageUsers from "../pages/dashboard/admin/ManageUsers.jsx";
+import Payments from "../pages/dashboard/admin/Payments.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -68,6 +69,14 @@ const Router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <CitizenDashboard></CitizenDashboard>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/admin/payments",
+        element: (
+          <PrivateRoute>
+            <Payments></Payments>
           </PrivateRoute>
         ),
       },
