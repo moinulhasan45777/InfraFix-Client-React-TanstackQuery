@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import React from "react";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import { Link } from "react-router";
+import Swal from "sweetalert2";
 
 const ManageUsers = () => {
   const axiosSecure = useAxiosSecure();
@@ -12,6 +13,34 @@ const ManageUsers = () => {
       return res.data;
     },
   });
+
+  const handleBlock = (ct) => {
+    const updated = {
+      blocked: ct.blocked == "no" ? "yes" : "no",
+    };
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Proceed!",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        await axiosSecure
+          .patch(`/update-blocked/${ct._id}`, updated)
+          .then(() => {
+            Swal.fire({
+              title: ct.blocked == "no" ? "Blocked!" : "Unblocked",
+              icon: "success",
+            });
+            refetch();
+          });
+      }
+    });
+  };
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -42,8 +71,11 @@ const ManageUsers = () => {
                 <td className="px-6 py-4">{citizen.status}</td>
                 <td className="px-6 py-4">
                   <div className="flex justify-center gap-2">
-                    <button className="btn btn-sm btn-outline btn-error flex items-center gap-1">
-                      Block
+                    <button
+                      onClick={() => handleBlock(citizen)}
+                      className="btn btn-sm btn-outline btn-error flex items-center gap-1"
+                    >
+                      {citizen.blocked == "no" ? "Block" : "Unblock"}
                     </button>
                   </div>
                 </td>
