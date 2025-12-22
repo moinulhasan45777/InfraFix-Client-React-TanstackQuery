@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Link } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import Swal from "sweetalert2";
+import useAuth from "../../../hooks/useAuth";
 
 const ManageStaff = () => {
+  const { updateUser, setLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
   const { data: staffs = [], refetch } = useQuery({
     queryKey: ["allStaffs"],
@@ -36,6 +38,38 @@ const ManageStaff = () => {
         });
       }
     });
+  };
+  const [modalIssue, setModalIssue] = useState(null);
+  const handleUpdate = (e) => {
+    const updatedStaffProfile = {
+      name: e.target.name.value,
+      photo: e.target.photo.value,
+    };
+
+    updateUser(updatedStaffProfile)
+      .then(async () => {
+        setLoading(false);
+        await axiosSecure
+          .patch(`/update-staff/${modalIssue._id}`, updatedStaffProfile)
+          .then(() => {
+            Swal.fire({
+              title: "Updated!",
+              text: "Staff has been updated.",
+              icon: "success",
+            });
+            refetch();
+          })
+          .catch((err) => {
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: err,
+            });
+          });
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -74,7 +108,13 @@ const ManageStaff = () => {
                 <td className="px-6 py-4">{staff.email}</td>
                 <td className="px-6 py-4">
                   <div className="flex justify-center gap-2">
-                    <button className="btn btn-sm btn-outline btn-info flex items-center gap-1">
+                    <button
+                      onClick={() => {
+                        setModalIssue(staff);
+                        document.getElementById("my_modal_1").showModal();
+                      }}
+                      className="btn btn-sm btn-outline btn-info flex items-center gap-1"
+                    >
                       <Pencil size={14} />
                       Update
                     </button>
@@ -111,7 +151,13 @@ const ManageStaff = () => {
             </div>
 
             <div className="flex gap-2">
-              <button className="btn btn-sm btn-outline btn-info flex-1 flex items-center justify-center gap-1">
+              <button
+                onClick={() => {
+                  setModalIssue(staff);
+                  document.getElementById("my_modal_1").showModal();
+                }}
+                className="btn btn-sm btn-outline btn-info flex-1 flex items-center justify-center gap-1"
+              >
                 <Pencil size={14} />
                 Update
               </button>
@@ -123,6 +169,76 @@ const ManageStaff = () => {
           </div>
         ))}
       </div>
+      {/* --------------------------------------------------MODAL------------------------------------------------------------------- */}
+      <dialog id="my_modal_1" className="modal">
+        <form
+          onSubmit={handleUpdate}
+          method="dialog"
+          className="modal-box w-full max-w-lg"
+        >
+          <h3 className="font-bold text-xl text-gray-800 mb-4">
+            Update Staff Info
+          </h3>
+
+          {/* Title */}
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 font-medium mb-1"
+              htmlFor="title"
+            >
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Enter issue title"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
+              value={modalIssue?.name || ""}
+              onChange={(e) =>
+                setModalIssue({ ...modalIssue, name: e.target.value })
+              }
+            />
+          </div>
+
+          {/* Description */}
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 font-medium mb-1"
+              htmlFor="description"
+            >
+              Photo URL
+            </label>
+            <input
+              type="text"
+              id="photo"
+              name="photo"
+              className="w-full border border-gray-300 rounded-md px-3 py-2 h-24 focus:outline-none focus:ring focus:ring-blue-200"
+              value={modalIssue?.photo || ""}
+              onChange={(e) =>
+                setModalIssue({ ...modalIssue, photo: e.target.value })
+              }
+            ></input>
+          </div>
+
+          {/* Modal actions */}
+          <div className="modal-action justify-between">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              onClick={() => document.getElementById("my_modal_1").close()}
+            >
+              Cancel
+            </button>
+            <button
+              className="btn btn-primary"
+              // handle form submission here
+            >
+              Update Staff
+            </button>
+          </div>
+        </form>
+      </dialog>
     </div>
   );
 };
