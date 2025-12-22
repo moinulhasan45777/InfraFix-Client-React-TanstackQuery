@@ -23,9 +23,11 @@ const CitizenDashboard = () => {
 
   const getPayment = () => {
     let sum = 0;
-    payments.map((payment) => {
-      sum += payment.paymentAmount;
-    });
+    payments
+      .filter((payment) => payment.paymentBy == user.email)
+      .map((payment) => {
+        sum += payment.paymentAmount;
+      });
 
     return sum;
   };
