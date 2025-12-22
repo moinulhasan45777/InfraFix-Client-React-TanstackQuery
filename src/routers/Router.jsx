@@ -14,6 +14,8 @@ import MyIssues from "../pages/dashboard/citizen/MyIssues.jsx";
 import IssueDetails from "../pages/issue-details/IssueDetails.jsx";
 import CitizenProfile from "../pages/dashboard/citizen/CitizenProfile.jsx";
 import CitizenDashboard from "../pages/dashboard/citizen/CitizenDashboard.jsx";
+import ManageStaff from "../pages/dashboard/admin/ManageStaff.jsx";
+import AddStaff from "../pages/dashboard/admin/AddStaff.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -65,6 +67,22 @@ const Router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <CitizenDashboard></CitizenDashboard>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/admin/manage-staffs",
+        element: (
+          <PrivateRoute>
+            <ManageStaff></ManageStaff>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/admin/add-staff",
+        element: (
+          <PrivateRoute>
+            <AddStaff></AddStaff>
           </PrivateRoute>
         ),
       },
