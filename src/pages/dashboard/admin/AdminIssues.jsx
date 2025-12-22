@@ -5,125 +5,109 @@ import { useQuery } from "@tanstack/react-query";
 
 const AdminIssues = () => {
   const axiosSecure = useAxiosSecure();
+  const [selectedIssue, setSelectedIssue] = useState(null);
+
   const { data: issues = [], refetch: refetchIssues } = useQuery({
     queryKey: ["allIssues"],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/issues`);
+      const res = await axiosSecure.get("/issues");
       return res.data;
     },
   });
+
   const { data: staffs = [] } = useQuery({
     queryKey: ["allStaffs"],
     queryFn: async () => {
-      const res = await axiosSecure.get(`/staffs`);
+      const res = await axiosSecure.get("/staffs");
       return res.data;
     },
   });
-  const [selectedIssue, setSelectedIssue] = useState(null);
+
   const handleAssignStaff = async (email) => {
-    const assigned = {
+    await axiosSecure.patch(`/assign-staff/${selectedIssue._id}`, {
       assignedStaff: email,
-    };
-    await axiosSecure
-      .patch(`/assign-staff/${selectedIssue._id}`, assigned)
-      .then(() => {
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "Staff Assigned!",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        document.getElementById("my_modal_1").close();
-        refetchIssues();
-      });
+    });
+
+    Swal.fire({
+      icon: "success",
+      title: "Staff Assigned!",
+      timer: 1500,
+      showConfirmButton: false,
+    });
+
+    document.getElementById("my_modal_1").close();
+    refetchIssues();
   };
 
   const handleRejection = async (id) => {
     Swal.fire({
       title: "Are you sure?",
-      text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, Proceed!",
+      confirmButtonText: "Yes, Reject",
     }).then(async (result) => {
-      const newStatus = {
-        status: "Rejected",
-      };
-      await axiosSecure.patch(`/reject-issue/${id}`, newStatus).then(() => {
-        if (result.isConfirmed) {
-          Swal.fire({
-            title: "Rejected!",
-            text: "Issue has been Rejected!",
-            icon: "success",
-          });
-        }
+      if (result.isConfirmed) {
+        await axiosSecure.patch(`/reject-issue/${id}`, {
+          status: "Rejected",
+        });
+
+        Swal.fire("Rejected!", "Issue has been rejected.", "success");
         refetchIssues();
-      });
+      }
     });
   };
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <div>
-          <h1 className="text-2xl font-semibold text-gray-800">All Issues</h1>
-          <p className="text-sm text-gray-500">View and manage Issues</p>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-semibold text-gray-800">All Issues</h1>
+        <p className="text-sm text-gray-500">View and manage issues</p>
       </div>
 
-      {/* Desktop Table */}
+      {/* ================= DESKTOP TABLE ================= */}
       <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b text-sm text-gray-600">
             <tr>
-              <th className="px-6 py-4 text-left font-medium">Title</th>
-              <th className="px-6 py-4 text-left font-medium">Category</th>
-              <th className="px-6 py-4 text-left font-medium">Status</th>
-              <th className="px-6 py-4 text-left font-medium">Priority</th>
-              <th className="px-6 py-4 text-left font-medium">
-                Assigned Staff
-              </th>
-              <th className="px-6 py-4 text-left font-medium">Action</th>
+              <th className="px-6 py-4 text-left">Title</th>
+              <th className="px-6 py-4 text-left">Category</th>
+              <th className="px-6 py-4 text-left">Status</th>
+              <th className="px-6 py-4 text-left">Priority</th>
+              <th className="px-6 py-4 text-left">Assigned Staff</th>
+              <th className="px-6 py-4 text-left">Action</th>
             </tr>
           </thead>
 
-          <tbody className="divide-y text-sm text-gray-700">
+          <tbody className="divide-y text-sm">
             {issues.map((issue) => (
-              <tr key={issue._id} className="hover:bg-gray-50 transition">
+              <tr key={issue._id} className="hover:bg-gray-50">
                 <td className="px-6 py-4 font-medium">{issue.title}</td>
                 <td className="px-6 py-4">{issue.category}</td>
                 <td className="px-6 py-4">{issue.status}</td>
                 <td className="px-6 py-4">{issue.priority}</td>
                 <td className="px-6 py-4">
-                  {issue.assignedStaff == "no" ? (
-                    <div className="flex justify-center gap-2">
-                      <button
-                        onClick={() => {
-                          setSelectedIssue(issue);
-                          document.getElementById("my_modal_1").showModal();
-                        }}
-                        className="btn btn-sm btn-outline btn-info flex items-center gap-1"
-                      >
-                        Assign Staff
-                      </button>
-                    </div>
+                  {issue.assignedStaff === "no" ? (
+                    <button
+                      className="btn btn-sm btn-outline btn-info"
+                      onClick={() => {
+                        setSelectedIssue(issue);
+                        document.getElementById("my_modal_1").showModal();
+                      }}
+                    >
+                      Assign Staff
+                    </button>
                   ) : (
                     issue.assignedStaff
                   )}
                 </td>
                 <td className="px-6 py-4">
-                  {issue.status == "Pending" ? (
+                  {issue.status === "Pending" ? (
                     <button
-                      onClick={() => {
-                        handleRejection(issue._id);
-                      }}
-                      className="btn bg-red btn-sm btn-outline btn-error flex items-center gap-1"
+                      className="btn btn-sm btn-outline btn-error"
+                      onClick={() => handleRejection(issue._id)}
                     >
-                      Reject Issue
+                      Reject
                     </button>
                   ) : (
                     issue.status
@@ -134,32 +118,87 @@ const AdminIssues = () => {
           </tbody>
         </table>
       </div>
-      {/* --------------------------------------------------MODAL------------------------------------------------------------------- */}
+
+      {/* ================= MOBILE CARDS ================= */}
+      <div className="md:hidden space-y-4">
+        {issues.map((issue) => (
+          <div
+            key={issue._id}
+            className="bg-white border rounded-xl shadow-sm p-4 space-y-2"
+          >
+            <div>
+              <h3 className="font-semibold text-gray-800">{issue.title}</h3>
+              <p className="text-xs text-gray-500">{issue.category}</p>
+            </div>
+
+            <div className="flex justify-between text-sm">
+              <span>Status:</span>
+              <span className="font-medium">{issue.status}</span>
+            </div>
+
+            <div className="flex justify-between text-sm">
+              <span>Priority:</span>
+              <span className="font-medium">{issue.priority}</span>
+            </div>
+
+            <div className="flex justify-between text-sm">
+              <span>Assigned:</span>
+              <span className="font-medium">
+                {issue.assignedStaff === "no"
+                  ? "Not Assigned"
+                  : issue.assignedStaff}
+              </span>
+            </div>
+
+            <div className="pt-3 flex gap-2">
+              {issue.assignedStaff === "no" && (
+                <button
+                  className="btn btn-xs btn-outline btn-info flex-1"
+                  onClick={() => {
+                    setSelectedIssue(issue);
+                    document.getElementById("my_modal_1").showModal();
+                  }}
+                >
+                  Assign
+                </button>
+              )}
+
+              {issue.status === "Pending" && (
+                <button
+                  className="btn btn-xs btn-outline btn-error flex-1"
+                  onClick={() => handleRejection(issue._id)}
+                >
+                  Reject
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* ================= MODAL ================= */}
       <dialog id="my_modal_1" className="modal">
-        <div className="modal-box bg-white w-full max-w-5xl p-4 md:p-6">
-          {/* Table wrapper for horizontal scroll */}
+        <div className="modal-box max-w-4xl bg-white">
+          <h2 className="text-xl font-semibold mb-4">Assign Staff</h2>
+
           <div className="overflow-x-auto">
-            <h2 className="text-3xl font-bold mb-10">Staff List</h2>
-            <table className="min-w-full bg-white">
-              <thead className="bg-gray-50 border-b text-sm text-gray-600">
+            <table className="min-w-full">
+              <thead className="bg-gray-50 text-sm">
                 <tr>
-                  <th className="px-4 py-3 text-left font-medium">Name</th>
-                  <th className="px-4 py-3 text-left font-medium">Email</th>
-                  <th className="px-4 py-3 text-center font-medium">Action</th>
+                  <th className="px-4 py-2 text-left">Name</th>
+                  <th className="px-4 py-2 text-left">Email</th>
+                  <th className="px-4 py-2 text-center">Action</th>
                 </tr>
               </thead>
-
-              <tbody className="divide-y text-sm text-gray-700">
+              <tbody className="divide-y text-sm">
                 {staffs.map((staff) => (
-                  <tr key={staff._id} className="hover:bg-gray-50 transition">
-                    <td className="px-4 py-3 font-medium whitespace-nowrap">
-                      {staff.name}
-                    </td>
-                    <td className="px-4 py-3 break-all">{staff.email}</td>
-                    <td className="px-4 py-3 text-center">
+                  <tr key={staff._id}>
+                    <td className="px-4 py-2">{staff.name}</td>
+                    <td className="px-4 py-2 break-all">{staff.email}</td>
+                    <td className="px-4 py-2 text-center">
                       <button
+                        className="btn btn-xs btn-outline btn-info"
                         onClick={() => handleAssignStaff(staff.email)}
-                        className="btn btn-xs sm:btn-sm btn-outline btn-info"
                       >
                         Assign
                       </button>
@@ -170,14 +209,12 @@ const AdminIssues = () => {
             </table>
           </div>
 
-          {/* Footer */}
-          <div className="mt-4 flex justify-end">
+          <div className="mt-4 text-right">
             <button
-              type="button"
-              className="btn btn-ghost btn-sm bg-base-300"
+              className="btn btn-sm"
               onClick={() => document.getElementById("my_modal_1").close()}
             >
-              Cancel
+              Close
             </button>
           </div>
         </div>

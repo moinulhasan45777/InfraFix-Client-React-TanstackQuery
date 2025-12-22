@@ -2,6 +2,7 @@ import axios from "axios";
 import React, { useEffect } from "react";
 import useAuth from "./useAuth";
 import { useNavigate } from "react-router";
+import Swal from "sweetalert2";
 
 const axiosSecure = axios.create({
   baseURL: "http://localhost:3000",
@@ -30,7 +31,12 @@ const useAxiosSecure = () => {
               navigate("/auth/login");
             })
             .catch((err) => {
-              console.log(err);
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: err,
+                footer: '<a href="#">Why do I have this issue?</a>',
+              });
             });
         }
         return Promise.reject(error);

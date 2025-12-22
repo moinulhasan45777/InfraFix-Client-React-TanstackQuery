@@ -145,36 +145,42 @@ const AssignedIssues = () => {
           </thead>
 
           <tbody className="divide-y text-sm text-gray-700">
-            {filteredIssues.map((issue) => (
-              <tr key={issue._id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 font-medium">{issue.title}</td>
-                <td className="px-6 py-4">{issue.createdBy}</td>
-                <td className="px-6 py-4">
-                  <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700">
-                    {issue.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <span
-                    className={`px-3 py-1 rounded-full text-xs ${
-                      issue.priority === "High"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-green-100 text-green-700"
-                    }`}
-                  >
-                    {issue.priority}
-                  </span>
-                </td>
-                <td className="px-6 py-4">
-                  <button
-                    onClick={(e) => handleOpenDropdown(e, issue._id)}
-                    className="btn btn-sm btn-outline btn-accent"
-                  >
-                    Change Status
-                  </button>
-                </td>
-              </tr>
-            ))}
+            {filteredIssues
+              .slice()
+              .sort((a, b) => {
+                const order = { High: 0, Normal: 1 };
+                return order[a.priority] - order[b.priority];
+              })
+              .map((issue) => (
+                <tr key={issue._id} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 font-medium">{issue.title}</td>
+                  <td className="px-6 py-4">{issue.createdBy}</td>
+                  <td className="px-6 py-4">
+                    <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700">
+                      {issue.status}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs ${
+                        issue.priority === "High"
+                          ? "bg-red-100 text-red-700"
+                          : "bg-green-100 text-green-700"
+                      }`}
+                    >
+                      {issue.priority}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <button
+                      onClick={(e) => handleOpenDropdown(e, issue._id)}
+                      className="btn btn-sm btn-outline btn-accent"
+                    >
+                      Change Status
+                    </button>
+                  </td>
+                </tr>
+              ))}
           </tbody>
         </table>
       </div>
