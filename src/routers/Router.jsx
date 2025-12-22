@@ -25,6 +25,7 @@ import StaffDashboard from "../pages/dashboard/staff/StaffDashboard.jsx";
 import StaffProfile from "../pages/dashboard/staff/StaffProfile.jsx";
 import AssignedIssues from "../pages/dashboard/staff/AssignedIssues.jsx";
 import ContactUs from "../pages/contact-us/ContactUs.jsx";
+import NotFound from "../pages/not-found/NotFound.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -188,6 +189,10 @@ const Router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 
