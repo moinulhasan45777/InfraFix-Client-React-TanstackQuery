@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLocation, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { ThumbsUp, MapPin } from "lucide-react";
 import useAxiosSecure from "../../hooks/useAxiosSecure";
 import useAuth from "../../hooks/useAuth";
@@ -9,7 +9,6 @@ import Swal from "sweetalert2";
 const AllIssues = () => {
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const { user } = useAuth();
 
