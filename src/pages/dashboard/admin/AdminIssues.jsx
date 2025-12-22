@@ -39,6 +39,32 @@ const AdminIssues = () => {
       });
   };
 
+  const handleRejection = async (id) => {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, Proceed!",
+    }).then(async (result) => {
+      const newStatus = {
+        status: "Closed",
+      };
+      await axiosSecure.patch(`/reject-issue/${id}`, newStatus).then(() => {
+        if (result.isConfirmed) {
+          Swal.fire({
+            title: "Rejected!",
+            text: "Issue has been Rejected!",
+            icon: "success",
+          });
+        }
+        refetchIssues();
+      });
+    });
+  };
+
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
       {/* Header */}
@@ -58,9 +84,10 @@ const AdminIssues = () => {
               <th className="px-6 py-4 text-left font-medium">Category</th>
               <th className="px-6 py-4 text-left font-medium">Status</th>
               <th className="px-6 py-4 text-left font-medium">Priority</th>
-              <th className="px-6 py-4 text-center font-medium">
+              <th className="px-6 py-4 text-left font-medium">
                 Assigned Staff
               </th>
+              <th className="px-6 py-4 text-left font-medium">Action</th>
             </tr>
           </thead>
 
@@ -86,6 +113,20 @@ const AdminIssues = () => {
                     </div>
                   ) : (
                     issue.assignedStaff
+                  )}
+                </td>
+                <td className="px-6 py-4">
+                  {issue.status == "Pending" ? (
+                    <button
+                      onClick={() => {
+                        handleRejection(issue._id);
+                      }}
+                      className="btn bg-red btn-sm btn-outline btn-error flex items-center gap-1"
+                    >
+                      Reject Issue
+                    </button>
+                  ) : (
+                    issue.status
                   )}
                 </td>
               </tr>
