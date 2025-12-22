@@ -4,7 +4,7 @@ import { FaExclamationTriangle, FaMapMarkedAlt } from "react-icons/fa";
 
 const Banner = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary/80">
+    <section className="relative overflow-hidden bg-gradient-to-br from-primary via-primary/90 to-secondary/80 rounded-3xl">
       {/* Background Glow */}
       <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top_left,white,transparent_60%)]" />
 

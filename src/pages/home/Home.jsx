@@ -2,6 +2,9 @@ import React from "react";
 import Banner from "./Banner";
 import LatestResolvedIssues from "./LatestResolvedIssues";
 import Features from "./Features";
+import HowItWorks from "./HowItWorks";
+import WhyInfraFix from "./WhyInfraFix";
+import WhoUsesInfraFix from "./Who";
 
 const Home = () => {
   return (
@@ -9,6 +12,9 @@ const Home = () => {
       <Banner></Banner>
       <LatestResolvedIssues></LatestResolvedIssues>
       <Features></Features>
+      <HowItWorks></HowItWorks>
+      <WhyInfraFix></WhyInfraFix>
+      <WhoUsesInfraFix></WhoUsesInfraFix>
     </div>
   );
 };
