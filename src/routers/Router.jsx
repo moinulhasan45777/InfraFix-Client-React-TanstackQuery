@@ -19,6 +19,7 @@ import AddStaff from "../pages/dashboard/admin/AddStaff.jsx";
 import ManageUsers from "../pages/dashboard/admin/ManageUsers.jsx";
 import Payments from "../pages/dashboard/admin/Payments.jsx";
 import AdminProfile from "../pages/dashboard/admin/AdminProfile.jsx";
+import AdminIssues from "../pages/dashboard/admin/AdminIssues.jsx";
 
 const Router = createBrowserRouter([
   {
@@ -78,6 +79,14 @@ const Router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <AdminProfile></AdminProfile>
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/dashboard/admin/all-issues",
+        element: (
+          <PrivateRoute>
+            <AdminIssues></AdminIssues>
           </PrivateRoute>
         ),
       },

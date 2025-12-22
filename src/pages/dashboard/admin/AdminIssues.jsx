@@ -1,43 +1,43 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
-import useAuth from "../../../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 
 const AdminIssues = () => {
-  const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
-  const { data: staffs = [], refetch } = useQuery({
+  const { data: issues = [], refetch: refetchIssues } = useQuery({
+    queryKey: ["allIssues"],
+    queryFn: async () => {
+      const res = await axiosSecure.get(`/issues`);
+      return res.data;
+    },
+  });
+  const { data: staffs = [] } = useQuery({
     queryKey: ["allStaffs"],
     queryFn: async () => {
       const res = await axiosSecure.get(`/staffs`);
       return res.data;
     },
   });
-
-  const handleDelete = (email) => {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        await axiosSecure.delete(`/delete-staff/${email}`).then(() => {
-          Swal.fire({
-            title: "Deleted!",
-            text: "Staff has been deleted.",
-            icon: "success",
-          });
-          refetch();
+  const [selectedIssue, setSelectedIssue] = useState(null);
+  const handleAssignStaff = async (email) => {
+    const assigned = {
+      assignedStaff: email,
+    };
+    await axiosSecure
+      .patch(`/assign-staff/${selectedIssue._id}`, assigned)
+      .then(() => {
+        Swal.fire({
+          position: "center",
+          icon: "success",
+          title: "Staff Assigned!",
+          showConfirmButton: false,
+          timer: 1500,
         });
-      }
-    });
+        document.getElementById("my_modal_1").close();
+        refetchIssues();
+      });
   };
-  const [modalIssue, setModalIssue] = useState(null);
 
   return (
     <div className="p-4 md:p-6 max-w-7xl mx-auto">
@@ -56,8 +56,8 @@ const AdminIssues = () => {
             <tr>
               <th className="px-6 py-4 text-left font-medium">Title</th>
               <th className="px-6 py-4 text-left font-medium">Category</th>
-              <th className="px-6 py-4 text-center font-medium">Status</th>
-              <th className="px-6 py-4 text-center font-medium">Priority</th>
+              <th className="px-6 py-4 text-left font-medium">Status</th>
+              <th className="px-6 py-4 text-left font-medium">Priority</th>
               <th className="px-6 py-4 text-center font-medium">
                 Assigned Staff
               </th>
@@ -65,142 +65,81 @@ const AdminIssues = () => {
           </thead>
 
           <tbody className="divide-y text-sm text-gray-700">
-            {staffs.map((staff) => (
-              <tr key={staff.email} className="hover:bg-gray-50 transition">
-                <td className="px-6 py-4 font-medium">{staff.name}</td>
-                <td className="px-6 py-4">{staff.email}</td>
+            {issues.map((issue) => (
+              <tr key={issue._id} className="hover:bg-gray-50 transition">
+                <td className="px-6 py-4 font-medium">{issue.title}</td>
+                <td className="px-6 py-4">{issue.category}</td>
+                <td className="px-6 py-4">{issue.status}</td>
+                <td className="px-6 py-4">{issue.priority}</td>
                 <td className="px-6 py-4">
-                  <div className="flex justify-center gap-2">
-                    <button
-                      onClick={() => {
-                        setModalIssue(staff);
-                        document.getElementById("my_modal_1").showModal();
-                      }}
-                      className="btn btn-sm btn-outline btn-info flex items-center gap-1"
-                    >
-                      <Pencil size={14} />
-                      Update
-                    </button>
-                    <button
-                      onClick={() => handleDelete(staff.email)}
-                      className="btn btn-sm btn-outline btn-error flex items-center gap-1"
-                    >
-                      <Trash2 size={14} />
-                      Delete
-                    </button>
-                  </div>
+                  {issue.assignedStaff == "no" ? (
+                    <div className="flex justify-center gap-2">
+                      <button
+                        onClick={() => {
+                          setSelectedIssue(issue);
+                          document.getElementById("my_modal_1").showModal();
+                        }}
+                        className="btn btn-sm btn-outline btn-info flex items-center gap-1"
+                      >
+                        Assign Staff
+                      </button>
+                    </div>
+                  ) : (
+                    issue.assignedStaff
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      {/* Mobile Card Layout */}
-      <div className="md:hidden space-y-4">
-        {staffs.map((staff) => (
-          <div
-            key={staff.email}
-            className="bg-white border border-gray-200 rounded-xl shadow-sm p-4"
-          >
-            <div className="mb-3">
-              <p className="text-xs text-gray-500">Name</p>
-              <p className="font-medium text-gray-800">{staff.name}</p>
-            </div>
-
-            <div className="mb-4">
-              <p className="text-xs text-gray-500">Email</p>
-              <p className="text-sm text-gray-700">{staff.email}</p>
-            </div>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => {
-                  setModalIssue(staff);
-                  document.getElementById("my_modal_1").showModal();
-                }}
-                className="btn btn-sm btn-outline btn-info flex-1 flex items-center justify-center gap-1"
-              >
-                <Pencil size={14} />
-                Update
-              </button>
-              <button className="btn btn-sm btn-outline btn-error flex-1 flex items-center justify-center gap-1">
-                <Trash2 size={14} />
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
       {/* --------------------------------------------------MODAL------------------------------------------------------------------- */}
       <dialog id="my_modal_1" className="modal">
-        <form
-          onSubmit={handleUpdate}
-          method="dialog"
-          className="modal-box w-full max-w-lg"
-        >
-          <h3 className="font-bold text-xl text-gray-800 mb-4">
-            Update Staff Info
-          </h3>
+        <div className="modal-box bg-white w-full max-w-5xl p-4 md:p-6">
+          {/* Table wrapper for horizontal scroll */}
+          <div className="overflow-x-auto">
+            <h2 className="text-3xl font-bold mb-10">Staff List</h2>
+            <table className="min-w-full bg-white">
+              <thead className="bg-gray-50 border-b text-sm text-gray-600">
+                <tr>
+                  <th className="px-4 py-3 text-left font-medium">Name</th>
+                  <th className="px-4 py-3 text-left font-medium">Email</th>
+                  <th className="px-4 py-3 text-center font-medium">Action</th>
+                </tr>
+              </thead>
 
-          {/* Title */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 font-medium mb-1"
-              htmlFor="title"
-            >
-              Name
-            </label>
-            <input
-              type="text"
-              id="name"
-              name="name"
-              placeholder="Enter issue title"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring focus:ring-blue-200"
-              value={modalIssue?.name || ""}
-              onChange={(e) =>
-                setModalIssue({ ...modalIssue, name: e.target.value })
-              }
-            />
+              <tbody className="divide-y text-sm text-gray-700">
+                {staffs.map((staff) => (
+                  <tr key={staff._id} className="hover:bg-gray-50 transition">
+                    <td className="px-4 py-3 font-medium whitespace-nowrap">
+                      {staff.name}
+                    </td>
+                    <td className="px-4 py-3 break-all">{staff.email}</td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => handleAssignStaff(staff.email)}
+                        className="btn btn-xs sm:btn-sm btn-outline btn-info"
+                      >
+                        Assign
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
 
-          {/* Description */}
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 font-medium mb-1"
-              htmlFor="description"
-            >
-              Photo URL
-            </label>
-            <input
-              type="text"
-              id="photo"
-              name="photo"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 h-24 focus:outline-none focus:ring focus:ring-blue-200"
-              value={modalIssue?.photo || ""}
-              onChange={(e) =>
-                setModalIssue({ ...modalIssue, photo: e.target.value })
-              }
-            ></input>
-          </div>
-
-          {/* Modal actions */}
-          <div className="modal-action justify-between">
+          {/* Footer */}
+          <div className="mt-4 flex justify-end">
             <button
               type="button"
-              className="btn btn-ghost"
+              className="btn btn-ghost btn-sm bg-base-300"
               onClick={() => document.getElementById("my_modal_1").close()}
             >
               Cancel
             </button>
-            <button
-              className="btn btn-primary"
-              // handle form submission here
-            >
-              Update Staff
-            </button>
           </div>
-        </form>
+        </div>
       </dialog>
     </div>
   );
