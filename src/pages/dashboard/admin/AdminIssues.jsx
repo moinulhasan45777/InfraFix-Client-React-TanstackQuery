@@ -121,59 +121,65 @@ const AdminIssues = () => {
 
       {/* ================= MOBILE CARDS ================= */}
       <div className="md:hidden space-y-4">
-        {issues.map((issue) => (
-          <div
-            key={issue._id}
-            className="bg-white border rounded-xl shadow-sm p-4 space-y-2"
-          >
-            <div>
-              <h3 className="font-semibold text-gray-800">{issue.title}</h3>
-              <p className="text-xs text-gray-500">{issue.category}</p>
-            </div>
+        {issues
+          .slice()
+          .sort((a, b) => {
+            const order = { High: 0, Normal: 1 };
+            return order[a.priority] - order[b.priority];
+          })
+          .map((issue) => (
+            <div
+              key={issue._id}
+              className="bg-white border rounded-xl shadow-sm p-4 space-y-2"
+            >
+              <div>
+                <h3 className="font-semibold text-gray-800">{issue.title}</h3>
+                <p className="text-xs text-gray-500">{issue.category}</p>
+              </div>
 
-            <div className="flex justify-between text-sm">
-              <span>Status:</span>
-              <span className="font-medium">{issue.status}</span>
-            </div>
+              <div className="flex justify-between text-sm">
+                <span>Status:</span>
+                <span className="font-medium">{issue.status}</span>
+              </div>
 
-            <div className="flex justify-between text-sm">
-              <span>Priority:</span>
-              <span className="font-medium">{issue.priority}</span>
-            </div>
+              <div className="flex justify-between text-sm">
+                <span>Priority:</span>
+                <span className="font-medium">{issue.priority}</span>
+              </div>
 
-            <div className="flex justify-between text-sm">
-              <span>Assigned:</span>
-              <span className="font-medium">
-                {issue.assignedStaff === "no"
-                  ? "Not Assigned"
-                  : issue.assignedStaff}
-              </span>
-            </div>
+              <div className="flex justify-between text-sm">
+                <span>Assigned:</span>
+                <span className="font-medium">
+                  {issue.assignedStaff === "no"
+                    ? "Not Assigned"
+                    : issue.assignedStaff}
+                </span>
+              </div>
 
-            <div className="pt-3 flex gap-2">
-              {issue.assignedStaff === "no" && (
-                <button
-                  className="btn btn-xs btn-outline btn-info flex-1"
-                  onClick={() => {
-                    setSelectedIssue(issue);
-                    document.getElementById("my_modal_1").showModal();
-                  }}
-                >
-                  Assign
-                </button>
-              )}
+              <div className="pt-3 flex gap-2">
+                {issue.assignedStaff === "no" && (
+                  <button
+                    className="btn btn-xs btn-outline btn-info flex-1"
+                    onClick={() => {
+                      setSelectedIssue(issue);
+                      document.getElementById("my_modal_1").showModal();
+                    }}
+                  >
+                    Assign
+                  </button>
+                )}
 
-              {issue.status === "Pending" && (
-                <button
-                  className="btn btn-xs btn-outline btn-error flex-1"
-                  onClick={() => handleRejection(issue._id)}
-                >
-                  Reject
-                </button>
-              )}
+                {issue.status === "Pending" && (
+                  <button
+                    className="btn btn-xs btn-outline btn-error flex-1"
+                    onClick={() => handleRejection(issue._id)}
+                  >
+                    Reject
+                  </button>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
       </div>
 
       {/* ================= MODAL ================= */}

@@ -1,11 +1,12 @@
 import React from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { Link, useLocation, useNavigate } from "react-router";
 import useAuth from "../../../hooks/useAuth";
 import Swal from "sweetalert2";
 
 const Login = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signInUser } = useAuth();
   const {
     register,
@@ -23,7 +24,11 @@ const Login = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-        navigate("/");
+        if (location.state) {
+          navigate(location.state?.location);
+        } else {
+          navigate("/");
+        }
       })
       .catch(() => {
         Swal.fire({

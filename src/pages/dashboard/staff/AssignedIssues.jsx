@@ -12,7 +12,11 @@ const AssignedIssues = () => {
   const [priorityFilter, setPriorityFilter] = useState("");
 
   const [openDropdown, setOpenDropdown] = useState(null);
-  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
+  const [dropdownPos, setDropdownPos] = useState({
+    top: 0,
+    left: 0,
+    above: false,
+  });
 
   const dropdownRef = useRef(null);
 
@@ -32,7 +36,6 @@ const AssignedIssues = () => {
     "Closed",
     "Rejected",
   ];
-
   const priorities = ["Normal", "High"];
 
   const filteredIssues = issues.filter(
@@ -42,19 +45,23 @@ const AssignedIssues = () => {
       (priorityFilter ? issue.priority === priorityFilter : true)
   );
 
-  // ================= Open dropdown =================
+  // Open dropdown
   const handleOpenDropdown = (e, issueId) => {
     const rect = e.currentTarget.getBoundingClientRect();
+    const dropdownHeight = 180; // approximate height
+    const windowHeight = window.innerHeight;
 
+    const showAbove = rect.bottom + dropdownHeight > windowHeight;
     setDropdownPos({
-      top: rect.bottom + 6,
       left: rect.left,
+      top: showAbove ? rect.top - dropdownHeight : rect.bottom,
+      above: showAbove,
     });
 
     setOpenDropdown(issueId);
   };
 
-  // ================= Change status =================
+  // Change status
   const handleStatusChange = async (issueId, newStatus) => {
     await axiosSecure
       .patch(`/update-status/${issueId}`, { status: newStatus })
@@ -71,7 +78,7 @@ const AssignedIssues = () => {
     setOpenDropdown(null);
   };
 
-  // ================= Close on outside click =================
+  // Close on outside click
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -79,13 +86,9 @@ const AssignedIssues = () => {
       }
     };
 
-    if (openDropdown) {
+    if (openDropdown)
       document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [openDropdown]);
 
   return (
@@ -132,7 +135,7 @@ const AssignedIssues = () => {
       </div>
 
       {/* Desktop Table */}
-      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200">
+      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-200 overflow-visible">
         <table className="min-w-full">
           <thead className="bg-gray-50 border-b text-sm text-gray-600">
             <tr>
@@ -147,12 +150,13 @@ const AssignedIssues = () => {
           <tbody className="divide-y text-sm text-gray-700">
             {filteredIssues
               .slice()
-              .sort((a, b) => {
-                const order = { High: 0, Normal: 1 };
-                return order[a.priority] - order[b.priority];
-              })
+              .sort(
+                (a, b) =>
+                  ({ High: 0, Normal: 1 }[a.priority] -
+                  { High: 0, Normal: 1 }[b.priority])
+              )
               .map((issue) => (
-                <tr key={issue._id} className="hover:bg-gray-50">
+                <tr key={issue._id} className="hover:bg-gray-50 relative">
                   <td className="px-6 py-4 font-medium">{issue.title}</td>
                   <td className="px-6 py-4">{issue.createdBy}</td>
                   <td className="px-6 py-4">
@@ -171,7 +175,7 @@ const AssignedIssues = () => {
                       {issue.priority}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-4 relative">
                     <button
                       onClick={(e) => handleOpenDropdown(e, issue._id)}
                       className="btn btn-sm btn-outline btn-accent"
@@ -185,8 +189,8 @@ const AssignedIssues = () => {
         </table>
       </div>
 
-      {/* ================= Floating Dropdown ================= */}
-      {openDropdown && (
+      {/* ================= Floating Dropdown for Desktop ================= */}
+      {openDropdown && window.innerWidth >= 768 && (
         <div
           ref={dropdownRef}
           style={{
@@ -213,6 +217,65 @@ const AssignedIssues = () => {
             ))}
         </div>
       )}
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-4">
+        {filteredIssues.map((issue) => (
+          <div
+            key={issue._id}
+            className="relative bg-white rounded-xl shadow-sm border border-gray-200 p-4 space-y-2"
+          >
+            <div>
+              <h3 className="font-semibold text-gray-800">{issue.title}</h3>
+              <p className="text-xs text-gray-500">
+                Created by: {issue.createdBy}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700">
+                {issue.status}
+              </span>
+              <span
+                className={`px-3 py-1 rounded-full text-xs ${
+                  issue.priority === "High"
+                    ? "bg-red-100 text-red-700"
+                    : "bg-green-100 text-green-700"
+                }`}
+              >
+                {issue.priority}
+              </span>
+            </div>
+
+            <button
+              onClick={(e) => handleOpenDropdown(e, issue._id)}
+              className="btn btn-sm btn-outline btn-accent w-full"
+            >
+              Change Status
+            </button>
+
+            {/* Mobile Dropdown (inside card) */}
+            {openDropdown === issue._id && window.innerWidth < 768 && (
+              <div
+                ref={dropdownRef}
+                className="absolute left-0 w-full bg-white border border-gray-200 rounded-lg shadow-lg z-50 mt-1"
+              >
+                {statuses
+                  .filter((s) => s !== issue.status)
+                  .map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => handleStatusChange(issue._id, status)}
+                      className="block w-full px-4 py-2 text-left text-sm hover:bg-gray-100"
+                    >
+                      {status}
+                    </button>
+                  ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
