@@ -197,9 +197,6 @@ const IssueDetails = () => {
 
       {/* Actions */}
       <div className="flex flex-wrap gap-2 mt-4">
-        <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-          Edit
-        </button>
         <button
           onClick={handleDelete}
           className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"

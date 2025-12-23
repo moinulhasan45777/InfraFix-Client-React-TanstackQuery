@@ -15,10 +15,9 @@ const LatestResolvedIssues = () => {
       return res.data;
     },
   });
-
   // ✅ Filter + sort resolved issues
   const resolvedIssues = issues
-    .filter((issue) => issue.status === "Resolved" || issue.status === "Closed")
+    .filter((issue) => issue.status == "Resolved" || issue.status == "Closed")
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, 6);
 

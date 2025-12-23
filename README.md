@@ -1,16 +1,95 @@
-# React + Vite
+# InfraFix – Public Infrastructure Issue Reporting System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🌐 Live Website
 
-Currently, two official plugins are available:
+**Live URL:** https://infrafix-eaa0b.web.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## 🔐 Admin Login Credentials (Demo)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+> ⚠️ These credentials are for demonstration purposes only.
 
-## Expanding the ESLint configuration
+- **Admin Email:** admin@gmail.com
+- **Admin Password:** admin@@
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 🏗️ About InfraFix
+
+**InfraFix** is a digital Public Infrastructure Issue Reporting System that allows citizens to report real-world public issues such as:
+
+- Broken streetlights
+- Potholes
+- Water leakage
+- Garbage overflow
+- Damaged footpaths
+
+Government staff and administrators can efficiently manage, verify, assign, and resolve reported issues using a centralized platform.
+
+Municipal services often suffer from delayed response and lack of tracking. Citizens usually have no single platform to report problems.  
+**InfraFix solves this by improving transparency, reducing response time, and making city service delivery more efficient.**
+
+---
+
+## 🚀 Website Features
+
+- 👤 **Citizen Issue Reporting**
+
+  - Citizens can submit issues with title, description, image, location, category, and priority.
+
+- 📷 **Image-Based Reporting**
+
+  - Issues include image proof to ensure better verification.
+
+- 🏷️ **Category-Based Organization**
+
+  - Issues are grouped by categories like roads, water, electricity, sanitation, etc.
+
+- 🔄 **Issue Status Tracking**
+
+  - Issues move through a clear lifecycle:
+    - Pending
+    - In-Progress
+    - Working
+    - Resolved
+    - Closed
+    - Rejected
+
+- 🧑‍💼 **Admin Dashboard**
+
+  - Admins can view all issues, assign staff, and reject invalid reports.
+
+- 🧑‍🔧 **Staff Assignment System**
+
+  - Issues can be assigned to specific government staff members.
+
+- ⚡ **Priority Management**
+
+  - Issues are marked as **High** or **Normal** priority for efficient handling.
+
+- 👍 **Upvote System**
+
+  - Citizens can upvote important issues to increase visibility.
+
+- 💳 **Payments & Subscriptions**
+
+  - Users can boost issues or subscribe for premium services.
+  - Payment records are stored and managed securely.
+
+- 📊 **Dashboard Statistics**
+
+  - Displays total issues, pending issues, resolved issues, and payments.
+
+- 🔍 **Advanced Filtering**
+
+  - Filter issues by status and priority for faster decision-making.
+
+- 📱 **Fully Responsive Design**
+
+  - Works seamlessly on desktop, tablet, and mobile devices.
+
+- 🔐 **Role-Based Authentication**
+  - Separate access control for Admin, Staff, and Citizens.
+
+---
