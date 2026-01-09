@@ -1,4 +1,3 @@
-import React from "react";
 import Navbar from "../components/Navbar";
 import { Outlet } from "react-router";
 import Footer from "../components/Footer";
@@ -12,12 +11,14 @@ const MainLayout = () => {
     return <Loading></Loading>;
   }
   return (
-    <div className="max-w-7xl mx-auto mt-5">
+    <div>
       <Navbar></Navbar>
-      <div>
-        <Outlet></Outlet>
+      <div className="pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Outlet></Outlet>
+        </div>
+        <Footer></Footer>
       </div>
-      <Footer></Footer>
     </div>
   );
 };

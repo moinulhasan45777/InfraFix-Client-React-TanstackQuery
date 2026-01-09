@@ -16,6 +16,10 @@ body {
   font-family: "Roboto", sans-serif;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 .active {
   background-color: #d6c6b4;
   border-radius: 4px;

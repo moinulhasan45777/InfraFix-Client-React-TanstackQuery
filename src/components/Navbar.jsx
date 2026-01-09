@@ -1,4 +1,3 @@
-import React from "react";
 import { Link, NavLink } from "react-router";
 import logo from "../assets/Logo.png";
 import useAuth from "../hooks/useAuth";
@@ -49,7 +48,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className="mb-5 navbar bg-primary text-black shadow-sm rounded-xl px-5">
+    <div className="fixed top-0 left-0 right-0 z-50 navbar bg-primary/95 backdrop-blur-md text-black shadow-lg px-5 w-full border-b border-white/10">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
