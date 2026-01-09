@@ -1,8 +1,17 @@
-import React from "react";
+import { useMemo } from "react";
 import useAuth from "../../../hooks/useAuth";
 import { useQuery } from "@tanstack/react-query";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useTitle from "../../../hooks/useTitle";
+import Loading from "../../../components/Loading";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
 
 const CitizenDashboard = () => {
   useTitle("Citizen Dashboard");
@@ -30,9 +39,37 @@ const CitizenDashboard = () => {
       .map((payment) => {
         sum += payment.paymentAmount;
       });
-
     return sum;
   };
+
+  // Chart data for citizen's issues
+  const myIssuesStatusData = useMemo(() => {
+    const statusCounts = {
+      Pending: issues.filter((issue) => issue.status === "Pending").length,
+      "In-Progress": issues.filter((issue) => issue.status === "In-Progress")
+        .length,
+      Resolved: issues.filter((issue) => issue.status === "Resolved").length,
+      Rejected: issues.filter((issue) => issue.status === "Rejected").length,
+    };
+
+    return Object.entries(statusCounts)
+      .filter(([, count]) => count > 0) // Only show statuses with issues
+      .map(([status, count]) => ({
+        name: status,
+        value: count,
+        percentage:
+          issues.length > 0 ? ((count / issues.length) * 100).toFixed(1) : 0,
+      }));
+  }, [issues]);
+
+  // Colors for citizen dashboard
+  const statusColors = {
+    Pending: "#FCD34D",
+    "In-Progress": "#FB923C",
+    Resolved: "#34D399",
+    Rejected: "#F87171",
+  };
+
   if (loading) {
     return <Loading></Loading>;
   }
@@ -85,6 +122,75 @@ const CitizenDashboard = () => {
           </p>
         </div>
       </div>
+
+      {/* Chart Section for Citizens */}
+      {issues.length > 0 && (
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            My Issues Status Distribution
+          </h2>
+          <div className="flex flex-col lg:flex-row items-center gap-8">
+            <div className="w-full lg:w-1/2">
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={myIssuesStatusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percentage }) => `${name}: ${percentage}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {myIssuesStatusData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={statusColors[entry.name]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="w-full lg:w-1/2 space-y-4">
+              <h3 className="text-lg font-semibold text-gray-700">
+                Issue Summary
+              </h3>
+              {myIssuesStatusData.map((item) => (
+                <div
+                  key={item.name}
+                  className="flex justify-between items-center p-3 bg-gray-50 rounded-lg"
+                >
+                  <span className="font-medium">{item.name}</span>
+                  <div className="text-right">
+                    <span className="text-lg font-bold">{item.value}</span>
+                    <span className="text-sm text-gray-500 ml-2">
+                      ({item.percentage}%)
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* No Issues Message */}
+      {issues.length === 0 && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
+          <div className="text-4xl mb-4">📝</div>
+          <h3 className="text-lg font-semibold text-blue-800 mb-2">
+            No Issues Reported Yet
+          </h3>
+          <p className="text-blue-600">
+            Start by reporting your first infrastructure issue to help improve
+            your community!
+          </p>
+        </div>
+      )}
     </div>
   );
 };

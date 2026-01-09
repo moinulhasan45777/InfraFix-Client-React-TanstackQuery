@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
 import useAuth from "../../../hooks/useAuth";
 import useAxiosSecure from "../../../hooks/useAxiosSecure";
 import useTitle from "../../../hooks/useTitle";
+import Loading from "../../../components/Loading";
 
 const StaffDashboard = () => {
   useTitle("Staff Dashboard");

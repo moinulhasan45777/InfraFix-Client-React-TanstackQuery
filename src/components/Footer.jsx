@@ -67,18 +67,6 @@ const Footer = () => {
               >
                 Contact Us
               </a>
-              <a
-                href="/privacy"
-                className="block text-sm text-secondary hover:text-black transition-colors"
-              >
-                Privacy Policy
-              </a>
-              <a
-                href="/terms"
-                className="block text-sm text-secondary hover:text-black transition-colors"
-              >
-                Terms of Service
-              </a>
             </div>
           </div>
 
@@ -168,21 +156,10 @@ const Footer = () => {
 
         {/* Bottom Bar */}
         <div className="border-t border-secondary/20 mt-8 pt-6">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+          <div className="text-center">
             <p className="text-sm text-secondary">
               © 2024 InfraFix. All rights reserved.
             </p>
-            <div className="flex space-x-6 text-xs text-secondary">
-              <a href="/privacy" className="hover:text-black transition-colors">
-                Privacy Policy
-              </a>
-              <a href="/terms" className="hover:text-black transition-colors">
-                Terms of Service
-              </a>
-              <a href="/cookies" className="hover:text-black transition-colors">
-                Cookie Policy
-              </a>
-            </div>
           </div>
         </div>
       </div>
