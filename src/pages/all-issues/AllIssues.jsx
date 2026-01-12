@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import { ThumbsUp, MapPin, Search, Filter, X } from "lucide-react";
@@ -18,6 +18,13 @@ const AllIssues = () => {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedStatus, setSelectedStatus] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+
+  // Infinite scroll state
+  const [displayedIssues, setDisplayedIssues] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const ITEMS_PER_PAGE = 12;
 
   const { data: issues = [], refetch } = useQuery({
     queryKey: ["allIssues"],
@@ -53,6 +60,62 @@ const AllIssues = () => {
       return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [issues, searchTerm, selectedCategory, selectedStatus]);
+
+  // Load more issues for infinite scroll
+  const loadMoreIssues = useCallback(() => {
+    if (isLoadingMore || !hasMore) return;
+
+    setIsLoadingMore(true);
+
+    // Simulate loading delay for better UX
+    setTimeout(() => {
+      const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      const newIssues = filteredIssues.slice(startIndex, endIndex);
+
+      if (newIssues.length === 0) {
+        setHasMore(false);
+      } else {
+        setDisplayedIssues((prev) => [...prev, ...newIssues]);
+        setCurrentPage((prev) => prev + 1);
+
+        // Check if we've loaded all issues
+        if (endIndex >= filteredIssues.length) {
+          setHasMore(false);
+        }
+      }
+
+      setIsLoadingMore(false);
+    }, 500);
+  }, [currentPage, filteredIssues, isLoadingMore, hasMore]);
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    // Use a timeout to avoid cascading renders
+    const timeoutId = setTimeout(() => {
+      const initialIssues = filteredIssues.slice(0, ITEMS_PER_PAGE);
+      setDisplayedIssues(initialIssues);
+      setCurrentPage(2); // Next page to load
+      setHasMore(filteredIssues.length > ITEMS_PER_PAGE);
+    }, 0);
+
+    return () => clearTimeout(timeoutId);
+  }, [filteredIssues]);
+
+  // Infinite scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      if (
+        window.innerHeight + document.documentElement.scrollTop >=
+        document.documentElement.offsetHeight - 1000 // Load when 1000px from bottom
+      ) {
+        loadMoreIssues();
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [loadMoreIssues]);
 
   // Clear all filters
   const clearFilters = () => {
@@ -186,16 +249,18 @@ const AllIssues = () => {
 
         {/* Results Count */}
         <div className="text-sm text-gray-600">
-          Showing {filteredIssues.length} of {issues.length} issues
+          Showing {displayedIssues.length} of {filteredIssues.length} issues
           {hasActiveFilters && (
-            <span className="ml-2 text-secondary font-medium">(filtered)</span>
+            <span className="ml-2 text-secondary font-medium">
+              (filtered from {issues.length} total)
+            </span>
           )}
         </div>
       </div>
 
       {/* Issues Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredIssues.map((issue) => (
+        {displayedIssues.map((issue) => (
           <div
             key={issue._id}
             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col"
@@ -271,6 +336,36 @@ const AllIssues = () => {
           </div>
         ))}
       </div>
+
+      {/* Loading More Indicator */}
+      {isLoadingMore && (
+        <div className="flex justify-center items-center py-8">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary mr-3"></div>
+          <span className="text-gray-600">Loading more issues...</span>
+        </div>
+      )}
+
+      {/* Load More Button (fallback for users who prefer clicking) */}
+      {!isLoadingMore && hasMore && displayedIssues.length > 0 && (
+        <div className="flex justify-center py-8">
+          <button
+            onClick={loadMoreIssues}
+            className="px-6 py-3 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors"
+          >
+            Load More Issues
+          </button>
+        </div>
+      )}
+
+      {/* End of Results Indicator */}
+      {!hasMore && displayedIssues.length > 0 && (
+        <div className="text-center py-8">
+          <div className="text-gray-500">
+            <div className="text-2xl mb-2">🎉</div>
+            <p>You've seen all {filteredIssues.length} issues!</p>
+          </div>
+        </div>
+      )}
 
       {/* Empty State */}
       {filteredIssues.length === 0 && (
