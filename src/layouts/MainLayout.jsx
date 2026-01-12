@@ -11,14 +11,14 @@ const MainLayout = () => {
     return <Loading></Loading>;
   }
   return (
-    <div>
-      <Navbar></Navbar>
-      <div className="pt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Outlet></Outlet>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1 pt-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <Outlet />
         </div>
-        <Footer></Footer>
-      </div>
+      </main>
+      <Footer />
     </div>
   );
 };

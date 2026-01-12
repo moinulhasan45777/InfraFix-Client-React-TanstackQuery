@@ -58,8 +58,8 @@ const Testimonials = () => {
   };
 
   return (
-    <section className="py-16 bg-gradient-to-br from-secondary/10 via-primary/20 to-secondary/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 bg-gradient-to-br from-secondary/10 via-primary/20 to-secondary/10">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
         {/* Section Header */}
         <motion.div
           className="text-center mb-16"

@@ -52,7 +52,9 @@ const AllIssues = () => {
     return issues.filter((issue) => {
       const matchesSearch =
         issue.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        issue.location.toLowerCase().includes(searchTerm.toLowerCase());
+        issue.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (issue.description &&
+          issue.description.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesCategory =
         !selectedCategory || issue.category === selectedCategory;
       const matchesStatus = !selectedStatus || issue.status === selectedStatus;
@@ -127,6 +129,13 @@ const AllIssues = () => {
   // Check if any filters are active
   const hasActiveFilters = searchTerm || selectedCategory || selectedStatus;
 
+  // Utility function to truncate description
+  const truncateDescription = (description, maxLength = 120) => {
+    if (!description) return "No description provided for this issue.";
+    if (description.length <= maxLength) return description;
+    return description.substring(0, maxLength).trim() + "...";
+  };
+
   const handleUpvote = async (issue) => {
     if (user) {
       const updatedIssue = {
@@ -148,30 +157,30 @@ const AllIssues = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 max-w-7xl mx-auto">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-2xl md:text-3xl font-semibold text-gray-800">
+      <div className="text-center md:text-left">
+        <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
           All Issues
         </h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-gray-600">
           View reported public infrastructure issues
         </p>
       </div>
 
       {/* Search and Filter Section */}
-      <div className="mb-6 space-y-4">
+      <div className="space-y-6">
         {/* Search Bar */}
-        <div className="relative">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+        <div className="relative max-w-2xl mx-auto">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
             <Search className="h-5 w-5 text-gray-400" />
           </div>
           <input
             type="text"
-            placeholder="Search by title or location..."
+            placeholder="Search by title, location, or description..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-secondary focus:border-transparent"
+            className="block w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-secondary focus:border-transparent text-lg"
           />
         </div>
 
@@ -248,8 +257,10 @@ const AllIssues = () => {
         )}
 
         {/* Results Count */}
-        <div className="text-sm text-gray-600">
-          Showing {displayedIssues.length} of {filteredIssues.length} issues
+        <div className="text-center text-gray-600">
+          Showing{" "}
+          <span className="font-semibold">{displayedIssues.length}</span> of{" "}
+          <span className="font-semibold">{filteredIssues.length}</span> issues
           {hasActiveFilters && (
             <span className="ml-2 text-secondary font-medium">
               (filtered from {issues.length} total)
@@ -259,41 +270,46 @@ const AllIssues = () => {
       </div>
 
       {/* Issues Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         {displayedIssues.map((issue) => (
           <div
             key={issue._id}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col"
+            className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col hover:shadow-lg transition-shadow duration-300"
           >
             {/* Image */}
-            <div className="h-48 w-full overflow-hidden bg-gray-100">
+            <div className="h-44 w-full overflow-hidden bg-gray-100">
               <img
                 src={issue.image}
                 alt={issue.title}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
 
             {/* Content */}
-            <div className="p-4 flex flex-col grow">
+            <div className="p-6 flex flex-col grow space-y-4">
               {/* Title */}
-              <h3 className="text-lg font-semibold text-gray-800 mb-1 line-clamp-1">
+              <h3 className="text-xl font-bold text-gray-800 line-clamp-2 leading-tight">
                 {issue.title}
               </h3>
 
+              {/* Description */}
+              <p className="text-gray-600 text-sm leading-relaxed line-clamp-3">
+                {truncateDescription(issue.description)}
+              </p>
+
               {/* Category */}
-              <p className="text-xs text-gray-500 mb-2">
+              <p className="text-sm text-gray-500 font-medium">
                 Category: {issue.category}
               </p>
 
               {/* Status & Priority */}
-              <div className="flex flex-wrap gap-2 mb-3">
-                <span className="px-3 py-1 rounded-full text-xs bg-blue-100 text-blue-700">
+              <div className="flex flex-wrap gap-2">
+                <span className="px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
                   {issue.status}
                 </span>
 
                 <span
-                  className={`px-3 py-1 rounded-full text-xs ${
+                  className={`px-3 py-1 rounded-full text-sm font-medium ${
                     issue.priority === "High"
                       ? "bg-red-100 text-red-700"
                       : "bg-green-100 text-green-700"
@@ -304,22 +320,22 @@ const AllIssues = () => {
               </div>
 
               {/* Location */}
-              <div className="flex items-center gap-1 text-sm text-gray-600 mb-4">
-                <MapPin size={14} />
-                <span className="line-clamp-1">{issue.location}</span>
+              <div className="flex items-center gap-2 text-gray-600">
+                <MapPin size={16} className="shrink-0" />
+                <span className="line-clamp-1 text-sm">{issue.location}</span>
               </div>
 
               {/* Footer */}
-              <div className="mt-auto flex items-center justify-between">
+              <div className="mt-auto flex items-center justify-between pt-4 border-t border-gray-100">
                 {/* Upvote (UI only) */}
                 <button
                   onClick={() => {
                     handleUpvote(issue);
                   }}
-                  className="flex items-center gap-1 text-gray-600 cursor-pointer hover:scale-110"
+                  className="flex items-center gap-2 text-gray-600 cursor-pointer hover:text-secondary hover:scale-110 transition-all duration-200"
                 >
-                  <ThumbsUp size={16} />
-                  <span className="text-sm">{issue.upvoteCount}</span>
+                  <ThumbsUp size={18} />
+                  <span className="font-medium">{issue.upvoteCount}</span>
                 </button>
 
                 {/* View Details */}
@@ -327,7 +343,7 @@ const AllIssues = () => {
                   onClick={() =>
                     navigate("/issue-details", { state: { issue } })
                   }
-                  className="btn btn-sm btn-outline btn-secondary"
+                  className="px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors font-medium"
                 >
                   View Details
                 </button>
@@ -339,18 +355,18 @@ const AllIssues = () => {
 
       {/* Loading More Indicator */}
       {isLoadingMore && (
-        <div className="flex justify-center items-center py-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-secondary mr-3"></div>
-          <span className="text-gray-600">Loading more issues...</span>
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-secondary mr-4"></div>
+          <span className="text-gray-600 text-lg">Loading more issues...</span>
         </div>
       )}
 
       {/* Load More Button (fallback for users who prefer clicking) */}
       {!isLoadingMore && hasMore && displayedIssues.length > 0 && (
-        <div className="flex justify-center py-8">
+        <div className="flex justify-center py-12">
           <button
             onClick={loadMoreIssues}
-            className="px-6 py-3 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors"
+            className="px-8 py-4 bg-secondary text-white rounded-xl hover:bg-secondary/90 transition-colors font-medium text-lg"
           >
             Load More Issues
           </button>
@@ -359,10 +375,12 @@ const AllIssues = () => {
 
       {/* End of Results Indicator */}
       {!hasMore && displayedIssues.length > 0 && (
-        <div className="text-center py-8">
+        <div className="text-center py-12">
           <div className="text-gray-500">
-            <div className="text-2xl mb-2">🎉</div>
-            <p>You've seen all {filteredIssues.length} issues!</p>
+            <div className="text-4xl mb-4">🎉</div>
+            <p className="text-lg font-medium">
+              You've seen all {filteredIssues.length} issues!
+            </p>
           </div>
         </div>
       )}

@@ -29,7 +29,7 @@ const Newsletter = () => {
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-r from-primary via-primary/90 to-secondary/80 relative overflow-hidden">
+    <section className="py-20 bg-gradient-to-r from-primary via-primary/90 to-secondary/80 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-xl"></div>
@@ -37,8 +37,8 @@ const Newsletter = () => {
         <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-white rounded-full blur-lg"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid lg:grid-cols-2 gap-12 items-center">
+      <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
+        <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Content */}
           <motion.div
             className="text-center lg:text-left"
